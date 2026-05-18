@@ -1094,7 +1094,7 @@
     <button class="filter-btn" data-filter="tees">Tees</button>
     <button class="filter-btn" data-filter="hoodies">Hoodies</button>
     <button class="filter-btn" data-filter="bottoms">Bottoms</button>
-    <button class="filter-btn" data-filter="accessories">Accessories</button>
+    <button class="filter-btn" data-filter="accessories">Accessories & Bags</button>
   </div>
   <div class="product-grid" id="productGrid">
     <!-- Products injected by JS -->
@@ -1224,12 +1224,26 @@
 
 <script>
 const products = [
-  { id:1, name:'Archive Tee Vol.1', price:55, category:'tees', tag:'New', sizes:'XS S M L XL', img:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=520&fit=crop&q=80', symbol:'T1' },
-  { id:2, name:'Shadow Hoodie', price:120, category:'hoodies', tag:'Limited', sizes:'S M L XL', img:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400&h=520&fit=crop&q=80', symbol:'H1' },
-  { id:3, name:'Canvas Cargo Pants', price:145, category:'bottoms', tag:'Drop 01', sizes:'28 30 32 34', img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=520&fit=crop&q=80', symbol:'P1' },
-  { id:4, name:'Graffiti Tee Vol.2', price:60, category:'tees', tag:'New', sizes:'XS S M L XL XXL', img:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=520&fit=crop&q=80', symbol:'T2' },
-  { id:5, name:'Street Puffer Jacket', price:280, category:'hoodies', tag:'Sold Out', sizes:'S M L', img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=520&fit=crop&q=80', symbol:'J1' },
-  { id:6, name:'Logo Cap', price:45, category:'accessories', tag:'Restock', sizes:'One Size', img:'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&h=520&fit=crop&q=80', symbol:'A1' },
+  // Tees
+  { id:1,  name:'Archive Tee Vol.1',     price:55,  category:'tees',        tag:'New',      sizes:'XS S M L XL',     img:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=520&fit=crop&q=80', symbol:'T1' },
+  { id:4,  name:'Graffiti Tee Vol.2',    price:60,  category:'tees',        tag:'New',      sizes:'XS S M L XL XXL', img:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=520&fit=crop&q=80', symbol:'T2' },
+  { id:7,  name:'Blvck Oversized Tee',   price:65,  category:'tees',        tag:'Drop 02',  sizes:'S M L XL XXL',    img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=520&fit=crop&q=80', symbol:'T3' },
+  { id:8,  name:'Canvas Acid Wash Tee',  price:70,  category:'tees',        tag:'Limited',  sizes:'XS S M L',        img:'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400&h=520&fit=crop&q=80', symbol:'T4' },
+  // Hoodies
+  { id:2,  name:'Shadow Hoodie',         price:120, category:'hoodies',     tag:'Limited',  sizes:'S M L XL',        img:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400&h=520&fit=crop&q=80', symbol:'H1' },
+  { id:5,  name:'Street Puffer Jacket',  price:280, category:'hoodies',     tag:'Sold Out', sizes:'S M L',           img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=520&fit=crop&q=80', symbol:'J1' },
+  { id:9,  name:'Blvck Zip-Up Hoodie',   price:135, category:'hoodies',     tag:'New',      sizes:'S M L XL',        img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=520&fit=crop&q=80', symbol:'H2' },
+  { id:10, name:'Urban Fleece Crewneck', price:110, category:'hoodies',     tag:'Drop 02',  sizes:'XS S M L XL',     img:'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=400&h=520&fit=crop&q=80', symbol:'H3' },
+  // Bottoms
+  { id:3,  name:'Canvas Cargo Pants',    price:145, category:'bottoms',     tag:'Drop 01',  sizes:'28 30 32 34',     img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=520&fit=crop&q=80', symbol:'P1' },
+  { id:11, name:'Blvck Jogger Pants',    price:95,  category:'bottoms',     tag:'New',      sizes:'S M L XL',        img:'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=400&h=520&fit=crop&q=80', symbol:'P2' },
+  { id:12, name:'Street Denim Jeans',    price:130, category:'bottoms',     tag:'Limited',  sizes:'28 30 32 34 36',  img:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=520&fit=crop&q=80', symbol:'P3' },
+  { id:13, name:'Canvas Track Pants',    price:100, category:'bottoms',     tag:'Drop 02',  sizes:'S M L XL XXL',    img:'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=520&fit=crop&q=80', symbol:'P4' },
+  // Accessories
+  { id:6,  name:'Logo Cap',              price:45,  category:'accessories', tag:'Restock',  sizes:'One Size',        img:'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&h=520&fit=crop&q=80', symbol:'A1' },
+  { id:14, name:'Blvck Tote Bag',        price:55,  category:'accessories', tag:'New',      sizes:'One Size',        img:'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=400&h=520&fit=crop&q=80', symbol:'A2' },
+  { id:15, name:'Street Backpack',       price:95,  category:'accessories', tag:'Limited',  sizes:'One Size',        img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=520&fit=crop&q=80', symbol:'A3' },
+  { id:16, name:'Canvas Shoulder Bag',   price:75,  category:'accessories', tag:'Drop 02',  sizes:'One Size',        img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=520&fit=crop&q=80', symbol:'A4' },
 ];
 
 let cart = [];
