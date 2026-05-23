@@ -872,6 +872,198 @@
     .cart-sidebar { width: 100%; }
     .feature-strip { padding: 3rem 1.5rem; }
   }
+
+  /* Product Detail Modal */
+  .product-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 500;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(6px);
+  }
+  .product-modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .product-modal {
+    position: fixed; inset: 0;
+    z-index: 501;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.95) translateY(24px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .product-modal.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; }
+
+  .product-modal-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 100%; max-width: 880px;
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pm-image-col { position: relative; background: var(--bg); min-height: 480px; }
+  .pm-image-col img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .pm-tag {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .pm-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 36px; height: 36px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: none;
+    transition: background 0.2s;
+  }
+  .pm-close:hover { background: var(--accent); }
+
+  .pm-thumbs {
+    display: flex; gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .pm-thumb {
+    width: 56px; height: 68px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    cursor: none;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+    opacity: 0.6;
+    transition: all 0.2s;
+  }
+  .pm-thumb.active, .pm-thumb:hover { border-color: var(--accent); opacity: 1; }
+
+  .pm-info-col { padding: 2rem; display: flex; flex-direction: column; gap: 1.2rem; overflow-y: auto; }
+
+  .pm-category {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .pm-name {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    line-height: 1;
+    letter-spacing: 0.03em;
+  }
+
+  .pm-price {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+
+  .pm-divider { height: 1px; background: var(--border); }
+
+  .pm-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+
+  /* Colors */
+  .pm-colors { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .pm-color {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: none;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .pm-color.active { border-color: var(--text); transform: scale(1.15); }
+  .pm-color:hover { transform: scale(1.1); }
+  .pm-color-label {
+    font-size: 0.75rem; color: var(--muted);
+    font-family: var(--font-mono);
+    margin-top: 0.5rem;
+  }
+
+  /* Sizes */
+  .pm-sizes { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .pm-size {
+    min-width: 44px; height: 40px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    cursor: none;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pm-size:hover { border-color: var(--accent); color: var(--accent); }
+  .pm-size.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pm-size.soldout { opacity: 0.3; text-decoration: line-through; cursor: not-allowed; }
+
+  /* Description */
+  .pm-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.8; }
+
+  /* Details accordion */
+  .pm-details { border-top: 1px solid var(--border); }
+  .pm-detail-row {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    cursor: none;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .pm-detail-row span { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+  .pm-detail-row .pm-detail-val { color: var(--text); font-size: 0.8rem; letter-spacing: 0; text-transform: none; font-family: var(--font-body); }
+
+  /* Add to bag button */
+  .pm-add-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 1rem;
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: none;
+    margin-top: auto;
+    transition: background 0.2s, transform 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  }
+  .pm-add-btn:hover { background: #e04000; transform: translateY(-1px); }
+  .pm-add-btn.no-size { background: var(--card); border: 1px solid var(--border); color: var(--muted); }
+
+  @media (max-width: 768px) {
+    .product-modal-inner { grid-template-columns: 1fr; }
+    .pm-image-col { min-height: 300px; }
+    .pm-info-col { padding: 1.5rem; }
+  }
 </style>
 </head>
 <body>
@@ -896,6 +1088,39 @@
       <span id="cartTotal">$0.00</span>
     </div>
     <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="product-modal-overlay" id="productModalOverlay" onclick="closeProductModal()"></div>
+<div class="product-modal" id="productModal">
+  <div class="product-modal-inner">
+    <div class="pm-image-col">
+      <img id="pm-main-img" src="" alt="">
+      <span class="pm-tag" id="pm-tag"></span>
+      <button class="pm-close" onclick="closeProductModal()">✕</button>
+      <div class="pm-thumbs" id="pm-thumbs"></div>
+    </div>
+    <div class="pm-info-col">
+      <div>
+        <div class="pm-category" id="pm-category"></div>
+        <div class="pm-name" id="pm-name"></div>
+      </div>
+      <div class="pm-price" id="pm-price"></div>
+      <div class="pm-divider"></div>
+      <div>
+        <div class="pm-label">Color — <span class="pm-color-label" id="pm-color-label">Select</span></div>
+        <div class="pm-colors" id="pm-colors"></div>
+      </div>
+      <div>
+        <div class="pm-label">Size — <span class="pm-color-label" id="pm-size-label">Select</span></div>
+        <div class="pm-sizes" id="pm-sizes"></div>
+      </div>
+      <div class="pm-divider"></div>
+      <p class="pm-desc" id="pm-desc"></p>
+      <div class="pm-details" id="pm-details"></div>
+      <button class="pm-add-btn no-size" id="pm-add-btn" onclick="addFromModal()">Select a Size</button>
+    </div>
   </div>
 </div>
 
@@ -1225,53 +1450,260 @@
 <script>
 const products = [
   // Tees
-  { id:1,  name:'Archive Tee Vol.1',     price:55,  category:'tees',        tag:'New',      sizes:'XS S M L XL',     img:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=520&fit=crop&q=80', symbol:'T1' },
-  { id:4,  name:'Graffiti Tee Vol.2',    price:60,  category:'tees',        tag:'New',      sizes:'XS S M L XL XXL', img:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=520&fit=crop&q=80', symbol:'T2' },
-  { id:7,  name:'Blvck Oversized Tee',   price:65,  category:'tees',        tag:'Drop 02',  sizes:'S M L XL XXL',    img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=520&fit=crop&q=80', symbol:'T3' },
-  { id:8,  name:'Canvas Acid Wash Tee',  price:70,  category:'tees',        tag:'Limited',  sizes:'XS S M L',        img:'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400&h=520&fit=crop&q=80', symbol:'T4' },
+  {
+    id:1, name:'Archive Tee Vol.1', price:55, category:'tees', tag:'New', symbol:'T1',
+    sizes:'XS S M L XL',
+    img:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Washed Black',hex:'#1a1a1a'},{name:'Vintage White',hex:'#f5f0e8'},{name:'Rust Orange',hex:'#c94a1a'}],
+    material:'400gsm heavyweight pre-shrunk cotton, garment-washed for a broken-in feel.',
+    description:'The Archive Tee Vol.1 is where it all started. An oversized silhouette with drop shoulders, raw-hem detail at the cuffs, and a subtle distressed chest print. Wear it like you\'ve had it for years.',
+    details:{'Fit':'Oversized / Boxy','Origin':'Manufactured in Portugal','Care':'Cold wash inside out, hang dry','SKU':'T1-001-SS25'}
+  },
+  {
+    id:4, name:'Graffiti Tee Vol.2', price:60, category:'tees', tag:'New', symbol:'T2',
+    sizes:'XS S M L XL XXL',
+    img:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Jet Black',hex:'#0a0a0a'},{name:'Cement Grey',hex:'#888888'},{name:'Bone',hex:'#e8e0d0'}],
+    material:'380gsm ringspun cotton blend. Screen-printed with water-based inks for a soft, breathable feel.',
+    description:'Vol.2 in our Archive series pushes the print work harder. Inspired by Queens graf walls \u2014 layered type, worn edges, zero compromise. The kind of tee that makes people ask where you got it.',
+    details:{'Fit':'Regular / Slightly Oversized','Origin':'Manufactured in Portugal','Care':'Cold wash, lay flat to dry','SKU':'T2-002-SS25'}
+  },
+  {
+    id:7, name:'Blvck Oversized Tee', price:65, category:'tees', tag:'Drop 02', symbol:'T3',
+    sizes:'S M L XL XXL',
+    img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Pitch Black',hex:'#050505'},{name:'Washed Navy',hex:'#1a2540'},{name:'Military Olive',hex:'#3d4a2e'}],
+    material:'420gsm double-faced cotton, brushed interior. Heavyweight enough to hold structure, soft enough to live in.',
+    description:'The signature silhouette. Extended body, dropped sleeves, and a chest hit logo in rubberized ink. When the fit matters more than the occasion.',
+    details:{'Fit':'Extreme Oversized','Origin':'Manufactured in Turkey','Care':'Cold wash inside out, tumble dry low','SKU':'T3-003-D02'}
+  },
+  {
+    id:8, name:'Canvas Acid Wash Tee', price:70, category:'tees', tag:'Limited', symbol:'T4',
+    sizes:'XS S M L',
+    img:'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Acid Black',hex:'#2a2020'},{name:'Acid Slate',hex:'#2a2a35'},{name:'Acid Sand',hex:'#5a4a35'}],
+    material:'360gsm garment-dyed cotton. Each piece is hand-treated — no two are exactly the same.',
+    description:'Limited to 40 units. The acid wash process creates a one-of-one result on every tee. Lived-in look, luxury weight. Not a reprint. Not a restock.',
+    details:{'Fit':'Oversized','Origin':'Hand-treated in NYC','Care':'Cold wash separately, hang dry','SKU':'T4-004-LTD'}
+  },
   // Hoodies
-  { id:2,  name:'Shadow Hoodie',         price:120, category:'hoodies',     tag:'Limited',  sizes:'S M L XL',        img:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400&h=520&fit=crop&q=80', symbol:'H1' },
-  { id:5,  name:'Street Puffer Jacket',  price:280, category:'hoodies',     tag:'Sold Out', sizes:'S M L',           img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=520&fit=crop&q=80', symbol:'J1' },
-  { id:9,  name:'Blvck Zip-Up Hoodie',   price:135, category:'hoodies',     tag:'New',      sizes:'S M L XL',        img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=520&fit=crop&q=80', symbol:'H2' },
-  { id:10, name:'Urban Fleece Crewneck', price:110, category:'hoodies',     tag:'Drop 02',  sizes:'XS S M L XL',     img:'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=400&h=520&fit=crop&q=80', symbol:'H3' },
+  {
+    id:2, name:'Shadow Hoodie', price:120, category:'hoodies', tag:'Limited', symbol:'H1',
+    sizes:'S M L XL',
+    img:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Obsidian',hex:'#0d0d0d'},{name:'Charcoal',hex:'#2e2e2e'},{name:'Ash',hex:'#5a5a5a'}],
+    material:'520gsm 100% heavyweight fleece cotton. Kangaroo pocket, ribbed cuffs and hem, premium drawcord.',
+    description:'The hoodie that started the brand. Designed for late nights, early mornings, and everything in between. A thick fleece shell with a barely-there logo \u2014 because the fit speaks first.',
+    details:{'Fit':'Relaxed / Oversized','Origin':'Manufactured in Portugal','Care':'Machine wash cold, tumble dry low','SKU':'H1-005-LTD'}
+  },
+  {
+    id:5, name:'Street Puffer Jacket', price:280, category:'hoodies', tag:'Sold Out', symbol:'J1',
+    sizes:'S M L',
+    img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Stealth Olive',hex:'#2c3020'}],
+    material:'Outer: 100% ripstop nylon. Fill: 90/10 down cluster. Lining: 100% recycled polyester.',
+    description:'The piece everyone\'s been asking about. A technical puffer with a street soul \u2014 clean lines, hidden seam pockets, and a matte finish that doesn\'t scream. Sold out in 9 minutes. Waitlist open.',
+    details:{'Fit':'Slim / True to Size','Origin':'Manufactured in Vietnam','Care':'Dry clean recommended','SKU':'J1-006-SO'}
+  },
+  {
+    id:9, name:'Blvck Zip-Up Hoodie', price:135, category:'hoodies', tag:'New', symbol:'H2',
+    sizes:'S M L XL',
+    img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Midnight Black',hex:'#0a0a0a'},{name:'Storm Grey',hex:'#3a3a3a'},{name:'Deep Navy',hex:'#0d1b2a'}],
+    material:'480gsm brushed fleece, 80% cotton / 20% polyester. YKK metal zipper, flat-lock stitching throughout.',
+    description:'A zip-up built to layer. Structured enough to wear out, comfortable enough to sleep in. Front YKK zip with a rubberized BC pull-tab. Two hand pockets, zero compromise.',
+    details:{'Fit':'Relaxed','Origin':'Manufactured in Portugal','Care':'Cold wash, hang dry','SKU':'H2-007-SS25'}
+  },
+  {
+    id:10, name:'Urban Fleece Crewneck', price:110, category:'hoodies', tag:'Drop 02', symbol:'H3',
+    sizes:'XS S M L XL',
+    img:'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Washed Black',hex:'#1a1a1a'},{name:'Ecru',hex:'#ece5d0'},{name:'Faded Burgundy',hex:'#5a1a20'}],
+    material:'460gsm loopback cotton fleece. Garment-washed for instant comfort. Ribbed collar, cuffs, and hem.',
+    description:'The everyday essential. A crewneck that goes with everything and stands on its own. Heavyweight fleece, minimal branding, maximum comfort. Drop 02\'s most wearable piece.',
+    details:{'Fit':'Slightly Oversized','Origin':'Manufactured in Turkey','Care':'Machine wash cold inside out','SKU':'H3-008-D02'}
+  },
   // Bottoms
-  { id:3,  name:'Canvas Cargo Pants',    price:145, category:'bottoms',     tag:'Drop 01',  sizes:'28 30 32 34',     img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=520&fit=crop&q=80', symbol:'P1' },
-  { id:11, name:'Blvck Jogger Pants',    price:95,  category:'bottoms',     tag:'New',      sizes:'S M L XL',        img:'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=400&h=520&fit=crop&q=80', symbol:'P2' },
-  { id:12, name:'Street Denim Jeans',    price:130, category:'bottoms',     tag:'Limited',  sizes:'28 30 32 34 36',  img:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=520&fit=crop&q=80', symbol:'P3' },
-  { id:13, name:'Canvas Track Pants',    price:100, category:'bottoms',     tag:'Drop 02',  sizes:'S M L XL XXL',    img:'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=520&fit=crop&q=80', symbol:'P4' },
+  {
+    id:3, name:'Canvas Cargo Pants', price:145, category:'bottoms', tag:'Drop 01', symbol:'P1',
+    sizes:'28 30 32 34',
+    img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Army Green',hex:'#3b4a2f'},{name:'Stone',hex:'#8a7a6a'}],
+    material:'100% 8oz cotton ripstop canvas. Six cargo pockets, zip fly, D-ring belt loops.',
+    description:'Utility meets culture. Six pockets, a relaxed tapered leg, and hardware that holds up. Built for the ones who carry a lot \u2014 on and off the block.',
+    details:{'Fit':'Relaxed Tapered','Origin':'Manufactured in Japan','Care':'Machine wash cold, line dry','SKU':'P1-009-D01'}
+  },
+  {
+    id:11, name:'Blvck Jogger Pants', price:95, category:'bottoms', tag:'New', symbol:'P2',
+    sizes:'S M L XL',
+    img:'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Jet Black',hex:'#050505'},{name:'Graphite',hex:'#3a3a3a'},{name:'Slate Blue',hex:'#2a3550'}],
+    material:'380gsm French terry cotton. Elasticated waist with internal drawcord. Ribbed ankle cuffs.',
+    description:'The BC Jogger is not an afterthought. A heavy French terry body, tapered through the thigh, and a clean cuff at the ankle. Dress it up, dress it down \u2014 it survives both.',
+    details:{'Fit':'Tapered / Relaxed Thigh','Origin':'Manufactured in Portugal','Care':'Cold wash, tumble dry low','SKU':'P2-010-SS25'}
+  },
+  {
+    id:12, name:'Street Denim Jeans', price:130, category:'bottoms', tag:'Limited', symbol:'P3',
+    sizes:'28 30 32 34 36',
+    img:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Raw Indigo',hex:'#1a2040'},{name:'Washed Black',hex:'#202020'},{name:'Stone Wash',hex:'#6a7a8a'}],
+    material:'14oz Japanese selvedge denim, 98% cotton / 2% elastane. YKK brass hardware.',
+    description:'Premium denim with a street edge. A slim-straight cut, mid-rise waist, and subtle distressing that happened by design, not accident. The jeans you\'ll still be wearing in five years.',
+    details:{'Fit':'Slim Straight','Origin':'Japan denim, assembled in Portugal','Care':'Wash sparingly, cold, inside out','SKU':'P3-011-LTD'}
+  },
+  {
+    id:13, name:'Canvas Track Pants', price:100, category:'bottoms', tag:'Drop 02', symbol:'P4',
+    sizes:'S M L XL XXL',
+    img:'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Midnight',hex:'#0a0a12'},{name:'Velocity Red',hex:'#cc2200'},{name:'Marathon Green',hex:'#1a3a1a'}],
+    material:'100% recycled polyester track weave. Side zip ankle vents, elastic waist, side stripe tape detail.',
+    description:'Sport heritage, streetwear future. A technical track pant in recycled poly with contrast side tape and zip vents at the ankle. Drop 02\'s fastest-moving piece.',
+    details:{'Fit':'Relaxed','Origin':'Manufactured in Vietnam','Care':'Machine wash cold, hang dry','SKU':'P4-012-D02'}
+  },
   // Accessories
-  { id:6,  name:'Logo Cap',              price:45,  category:'accessories', tag:'Restock',  sizes:'One Size',        img:'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&h=520&fit=crop&q=80', symbol:'A1' },
-  { id:14, name:'Blvck Tote Bag',        price:55,  category:'accessories', tag:'New',      sizes:'One Size',        img:'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=400&h=520&fit=crop&q=80', symbol:'A2' },
-  { id:15, name:'Street Backpack',       price:95,  category:'accessories', tag:'Limited',  sizes:'One Size',        img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=520&fit=crop&q=80', symbol:'A3' },
-  { id:16, name:'Canvas Shoulder Bag',   price:75,  category:'accessories', tag:'Drop 02',  sizes:'One Size',        img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=520&fit=crop&q=80', symbol:'A4' },
+  {
+    id:6, name:'Logo Cap', price:45, category:'accessories', tag:'Restock', symbol:'A1',
+    sizes:'One Size',
+    img:'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Bone',hex:'#e0d8c8'},{name:'Washed Olive',hex:'#4a5038'}],
+    material:'6-panel structured crown, 100% cotton twill. Embroidered BC logo. Adjustable brass-buckle strap.',
+    description:'The classic. Six-panel structured cap with a subtle embroidered logo on a tonal base. Low-key enough for every fit, recognizable to the ones who know.',
+    details:{'Fit':'Adjustable / One Size','Origin':'Manufactured in Bangladesh','Care':'Spot clean only','SKU':'A1-013-REST'}
+  },
+  {
+    id:14, name:'Blvck Tote Bag', price:55, category:'accessories', tag:'New', symbol:'A2',
+    sizes:'One Size',
+    img:'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Natural Canvas',hex:'#d4c9a8'},{name:'Blvck Canvas',hex:'#1a1a1a'},{name:'Rust',hex:'#8a3a1a'}],
+    material:'16oz heavyweight canvas cotton. Reinforced base, 28" drop handles, interior zip pocket.',
+    description:'Carry it all. A heavyweight canvas tote built to replace the bags you\'ve been throwing away. Wide enough for a 16" laptop, strong enough to last years.',
+    details:{'Fit':'One Size / 18"W x 16"H','Origin':'Manufactured in India','Care':'Spot clean, air dry','SKU':'A2-014-SS25'}
+  },
+  {
+    id:15, name:'Street Backpack', price:95, category:'accessories', tag:'Limited', symbol:'A3',
+    sizes:'One Size',
+    img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Coyote Brown',hex:'#5a4030'}],
+    material:'900D ballistic nylon exterior, 210D nylon lining. Padded 15" laptop sleeve, YKK zippers throughout.',
+    description:'Built like gear, worn like culture. A 20L technical pack with a padded laptop sleeve, waterproof base panel, and clean external profile. Everything you need, nothing you don\'t.',
+    details:{'Fit':'One Size / 20L','Origin':'Manufactured in Vietnam','Care':'Wipe with damp cloth','SKU':'A3-015-LTD'}
+  },
+  {
+    id:16, name:'Canvas Shoulder Bag', price:75, category:'accessories', tag:'Drop 02', symbol:'A4',
+    sizes:'One Size',
+    img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80',
+    imgs:[
+      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80'
+    ],
+    colors:[{name:'Washed Black',hex:'#1a1a1a'},{name:'Desert Sand',hex:'#b8a080'},{name:'Deep Olive',hex:'#3a4025'}],
+    material:'12oz canvas cotton with full leather trim. Adjustable webbing strap, antique brass hardware.',
+    description:'The Drop 02 everyday carry. A mid-size shoulder bag with leather trim and an adjustable strap that actually stays put. Main compartment, front slip pocket, interior key clip.',
+    details:{'Fit':'One Size / 12"W x 9"H','Origin':'Manufactured in India','Care':'Leather condition every 3 months','SKU':'A4-016-D02'}
+  },
 ];
 
 let cart = [];
 let currentFilter = 'all';
+let activeProductId = null;
+let selectedColor = null;
+let selectedSize = null;
 
 function renderProducts(filter) {
   const grid = document.getElementById('productGrid');
   const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
   grid.innerHTML = filtered.map(p => `
-    <div class="product-card reveal" data-category="${p.category}">
-      <div class="product-img ${p.bg}">
-        <div class="product-graphic">
-          <svg width="140" height="140" viewBox="0 0 140 140">
-            <circle cx="70" cy="70" r="65" fill="none" stroke="rgba(255,77,0,0.15)" stroke-width="1" stroke-dasharray="6,4"/>
-            <circle cx="70" cy="70" r="42" fill="none" stroke="rgba(255,184,0,0.1)" stroke-width="1"/>
-            <text x="70" y="80" text-anchor="middle" font-family="Bebas Neue,sans-serif" font-size="28" fill="rgba(255,255,255,0.15)" letter-spacing="3">${p.symbol}</text>
-          </svg>
-        </div>
+    <div class="product-card reveal" data-category="${p.category}" onclick="openProductModal(${p.id})">
+      <div class="product-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s ease;">
         ${p.tag !== 'Sold Out' ? `<span class="product-tag">${p.tag}</span>` : `<span class="product-tag" style="background:#444">${p.tag}</span>`}
         <div class="product-overlay">
-          ${p.tag !== 'Sold Out' ? `<button class="add-btn" onclick="addToCart(${p.id}, event)">+ Add to Bag</button>` : `<button class="add-btn" style="background:#444;cursor:default" disabled>Sold Out</button>`}
+          ${p.tag !== 'Sold Out'
+            ? `<button class="add-btn" onclick="event.stopPropagation(); openProductModal(${p.id})">View Details</button>`
+            : `<button class="add-btn" style="background:#444;cursor:default" disabled>Sold Out</button>`}
         </div>
       </div>
       <div class="product-info">
         <div class="product-name">${p.name}</div>
         <div class="product-meta">
           <span class="product-price">$${p.price}</span>
-          <span class="product-sizes">${p.sizes}</span>
+          <span class="product-sizes">${p.sizes.split(' ').slice(0,4).join(' / ')}${p.sizes.split(' ').length > 4 ? ' +' : ''}</span>
         </div>
       </div>
     </div>
@@ -1279,8 +1711,131 @@ function renderProducts(filter) {
   observeReveal();
 }
 
+function openProductModal(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  activeProductId = id;
+  selectedColor = null;
+  selectedSize = null;
+
+  // Main image
+  document.getElementById('pm-main-img').src = p.imgs[0];
+  document.getElementById('pm-main-img').alt = p.name;
+  document.getElementById('pm-tag').textContent = p.tag;
+  document.getElementById('pm-tag').style.background = p.tag === 'Sold Out' ? '#444' : 'var(--accent)';
+  document.getElementById('pm-category').textContent = p.category.toUpperCase();
+  document.getElementById('pm-name').textContent = p.name;
+  document.getElementById('pm-price').textContent = '$' + p.price;
+  document.getElementById('pm-desc').textContent = p.description;
+
+  // Thumbnails
+  document.getElementById('pm-thumbs').innerHTML = p.imgs.map((src, i) => `
+    <img class="pm-thumb ${i === 0 ? 'active' : ''}" src="${src}" alt="${p.name} view ${i+1}"
+      onclick="switchModalImg(this, '${src}')" loading="lazy">
+  `).join('');
+
+  // Colors
+  document.getElementById('pm-color-label').textContent = 'Select';
+  document.getElementById('pm-colors').innerHTML = p.colors.map(c => `
+    <div class="pm-color" style="background:${c.hex}" title="${c.name}"
+      onclick="selectModalColor(this, '${c.name}')"></div>
+  `).join('');
+
+  // Sizes
+  document.getElementById('pm-size-label').textContent = 'Select';
+  const isSoldOut = p.tag === 'Sold Out';
+  document.getElementById('pm-sizes').innerHTML = p.sizes.split(' ').map(s => `
+    <button class="pm-size ${isSoldOut ? 'soldout' : ''}" ${isSoldOut ? 'disabled' : ''} onclick="selectModalSize(this, '${s}')">${s}</button>
+  `).join('');
+
+  // Details
+  document.getElementById('pm-details').innerHTML = Object.entries(p.details).map(([k, v]) => `
+    <div class="pm-detail-row">
+      <span>${k}</span>
+      <span class="pm-detail-val">${v}</span>
+    </div>
+  `).join('') + `
+    <div class="pm-detail-row">
+      <span>Material</span>
+      <span class="pm-detail-val">${p.material}</span>
+    </div>
+  `;
+
+  // Add button state
+  updateModalAddBtn(p);
+
+  // Open
+  document.getElementById('productModalOverlay').classList.add('open');
+  document.getElementById('productModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function switchModalImg(thumb, src) {
+  document.getElementById('pm-main-img').src = src;
+  document.querySelectorAll('.pm-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function selectModalColor(el, name) {
+  document.querySelectorAll('.pm-color').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedColor = name;
+  document.getElementById('pm-color-label').textContent = name;
+  const p = products.find(x => x.id === activeProductId);
+  updateModalAddBtn(p);
+}
+
+function selectModalSize(el, size) {
+  if (el.classList.contains('soldout')) return;
+  document.querySelectorAll('.pm-size').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  selectedSize = size;
+  document.getElementById('pm-size-label').textContent = size;
+  const p = products.find(x => x.id === activeProductId);
+  updateModalAddBtn(p);
+}
+
+function updateModalAddBtn(p) {
+  const btn = document.getElementById('pm-add-btn');
+  if (p.tag === 'Sold Out') {
+    btn.textContent = 'Sold Out';
+    btn.className = 'pm-add-btn no-size';
+    btn.disabled = true;
+    return;
+  }
+  btn.disabled = false;
+  if (!selectedSize) {
+    btn.textContent = 'Select a Size';
+    btn.className = 'pm-add-btn no-size';
+  } else {
+    btn.innerHTML = `+ Add to Bag — $${p.price}`;
+    btn.className = 'pm-add-btn';
+  }
+}
+
+function addFromModal() {
+  if (!selectedSize || !activeProductId) return;
+  const p = products.find(x => x.id === activeProductId);
+  if (!p || p.tag === 'Sold Out') return;
+  const existing = cart.find(i => i.id === p.id && i.selectedSize === selectedSize);
+  if (existing) { existing.qty++; }
+  else { cart.push({...p, qty: 1, selectedSize, selectedColor}); }
+  updateCartUI();
+  showToast(`✓ ${p.name} (${selectedSize}) added to bag`);
+  closeProductModal();
+}
+
+function closeProductModal() {
+  document.getElementById('productModalOverlay').classList.remove('open');
+  document.getElementById('productModal').classList.remove('open');
+  document.body.style.overflow = '';
+  activeProductId = null;
+  selectedColor = null;
+  selectedSize = null;
+}
+
 function addToCart(id, e) {
-  e.stopPropagation();
+  if (e) e.stopPropagation();
   const product = products.find(p => p.id === id);
   if (!product || product.tag === 'Sold Out') return;
   const existing = cart.find(i => i.id === id);
@@ -1307,9 +1862,12 @@ function updateCartUI() {
   footer.style.display = 'block';
   body.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <div class="cart-item-img">${item.symbol}</div>
+      <div class="cart-item-img" style="overflow:hidden;padding:0">
+        <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-size">${item.selectedSize ? 'Size: ' + item.selectedSize : ''} ${item.selectedColor ? '· ' + item.selectedColor : ''}</div>
         <div class="cart-item-size">Qty: ${item.qty}</div>
         <div class="cart-item-price">$${item.price * item.qty}</div>
       </div>
@@ -1377,9 +1935,17 @@ document.addEventListener('mousemove', e => {
   cursor.style.left = e.clientX + 'px';
   cursor.style.top = e.clientY + 'px';
 });
-document.querySelectorAll('a, button, .product-card, .filter-btn, .social-link').forEach(el => {
+document.querySelectorAll('a, button, .product-card, .filter-btn, .social-link, .pm-thumb, .pm-color, .pm-size').forEach(el => {
   el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
   el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// Re-apply cursor hover to dynamically created modal elements
+document.getElementById('productModal').addEventListener('mouseover', e => {
+  if (e.target.matches('button, .pm-thumb, .pm-color, .pm-size')) cursor.classList.add('hover');
+});
+document.getElementById('productModal').addEventListener('mouseout', e => {
+  if (e.target.matches('button, .pm-thumb, .pm-color, .pm-size')) cursor.classList.remove('hover');
 });
 
 
@@ -1407,9 +1973,12 @@ function renderCheckoutSummary() {
   document.getElementById('co-grand-total').textContent = '$' + total.toFixed(2);
   document.getElementById('co-items-list').innerHTML = cart.map(item => `
     <div class="co-summary-item">
-      <div class="co-summary-item-img">${item.symbol}</div>
+      <div class="co-summary-item-img" style="overflow:hidden;padding:0">
+        <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
       <div style="flex:1">
         <div class="co-summary-item-name">${item.name}</div>
+        <div class="co-summary-item-qty">${item.selectedSize ? 'Size: ' + item.selectedSize : ''} ${item.selectedColor ? '· ' + item.selectedColor : ''}</div>
         <div class="co-summary-item-qty">Qty: ${item.qty}</div>
         <div class="co-summary-item-price">$${(item.price * item.qty).toFixed(2)}</div>
       </div>
@@ -1454,6 +2023,14 @@ function formatExpiry(input) {
   if (val.length >= 3) val = val.substring(0,2) + ' / ' + val.substring(2);
   input.value = val;
 }
+
+// Escape key closes modals
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeProductModal();
+    closeCheckout();
+  }
+});
 
 // Init
 renderProducts('all');
