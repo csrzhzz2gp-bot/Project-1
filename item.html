@@ -1,2040 +1,373 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BLVCK CANVAS — Streetwear</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --card: #1c1c1c;
-    --accent: #FF4D00;
-    --accent2: #FFB800;
-    --text: #f0f0f0;
-    --muted: #888;
-    --border: rgba(255,255,255,0.08);
-    --font-display: 'Bebas Neue', sans-serif;
-    --font-body: 'Outfit', sans-serif;
-    --font-mono: 'Space Mono', monospace;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.6;
-    overflow-x: hidden;
-    cursor: none;
-  }
-
-  /* Custom cursor */
-  #cursor {
-    width: 12px; height: 12px;
-    background: var(--accent);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
-  }
-  #cursor.hover { width: 36px; height: 36px; background: rgba(255,77,0,0.2); border: 1.5px solid var(--accent); }
-
-  /* Nav */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.2rem 2.5rem;
-    background: rgba(10,10,10,0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    transition: padding 0.3s ease;
-  }
-  nav.scrolled { padding: 0.8rem 2.5rem; }
-
-  .nav-logo {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    letter-spacing: 0.05em;
-    color: var(--text);
-    text-decoration: none;
-  }
-  .nav-logo span { color: var(--accent); }
-
-  .nav-links {
-    display: flex; gap: 2.5rem;
-    list-style: none;
-  }
-  .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-    font-family: var(--font-mono);
-  }
-  .nav-links a:hover { color: var(--text); }
-
-  .nav-actions { display: flex; align-items: center; gap: 1.2rem; }
-
-  .nav-cart {
-    position: relative;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 0.55rem 1.2rem;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    cursor: none;
-    transition: background 0.2s, transform 0.15s;
-  }
-  .nav-cart:hover { background: #e04000; transform: translateY(-1px); }
-  .cart-count {
-    position: absolute; top: -6px; right: -6px;
-    width: 18px; height: 18px;
-    background: var(--accent2);
-    color: #000;
-    border-radius: 50%;
-    font-size: 0.65rem;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; background: none; border: none; }
-  .hamburger span { width: 24px; height: 2px; background: var(--text); display: block; transition: all 0.3s; }
-
-  /* Mobile menu */
-  .mobile-menu {
-    display: none;
-    position: fixed; inset: 0;
-    background: var(--bg);
-    z-index: 99;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-  }
-  .mobile-menu.open { display: flex; }
-  .mobile-menu a {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    color: var(--text);
-    text-decoration: none;
-    letter-spacing: 0.05em;
-  }
-  .mobile-menu a:hover { color: var(--accent); }
-
-  /* Hero */
-  .hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    justify-content: flex-end;
-    padding: 0 2.5rem 4rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 70% 40%, rgba(255,77,0,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 50% at 20% 70%, rgba(255,184,0,0.06) 0%, transparent 60%),
-      var(--bg);
-  }
-
-  .hero-grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
-  }
-
-  .hero-badge {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 1.2rem;
-    position: relative;
-    z-index: 2;
-  }
-  .hero-badge::before { content: '//'; margin-right: 0.5rem; color: var(--muted); }
-
-  .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(5rem, 14vw, 13rem);
-    line-height: 0.9;
-    letter-spacing: 0.01em;
-    position: relative;
-    z-index: 2;
-    opacity: 0;
-    transform: translateY(40px);
-    animation: fadeUp 0.9s ease 0.2s forwards;
-  }
-  .hero-title .outline {
-    -webkit-text-stroke: 1px rgba(240,240,240,0.4);
-    color: transparent;
-  }
-  .hero-title .accent { color: var(--accent); }
-
-  .hero-sub {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    margin-top: 2.5rem;
-    position: relative; z-index: 2;
-    opacity: 0; animation: fadeUp 0.9s ease 0.5s forwards;
-  }
-
-  .hero-desc {
-    max-width: 340px;
-    color: var(--muted);
-    font-size: 0.95rem;
-    line-height: 1.7;
-  }
-
-  .hero-cta {
-    display: flex; flex-direction: column; align-items: flex-end; gap: 1rem;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    padding: 1rem 2.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: none;
-    display: inline-block;
-    transition: all 0.2s;
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  }
-  .btn-primary:hover { background: #e04000; transform: translateY(-2px); }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text);
-    padding: 1rem 2.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: 1px solid var(--border);
-    cursor: none;
-    display: inline-block;
-    transition: all 0.2s;
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-
-  .hero-scroll {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    display: flex; align-items: center; gap: 0.5rem;
-  }
-  .hero-scroll::before {
-    content: '';
-    width: 1px; height: 40px;
-    background: linear-gradient(to bottom, transparent, var(--muted));
-    display: block;
-  }
-
-  /* Marquee */
-  .marquee-wrap {
-    overflow: hidden;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    padding: 1rem 0;
-  }
-  .marquee-track {
-    display: flex; gap: 3rem;
-    animation: marquee 20s linear infinite;
-    width: max-content;
-  }
-  .marquee-item {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 1.5rem;
-  }
-  .marquee-item span { color: var(--accent); font-size: 0.6rem; }
-
-  /* Section base */
-  section { padding: 6rem 2.5rem; }
-
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-  .section-label::before { content: '[ '; color: var(--muted); }
-  .section-label::after { content: ' ]'; color: var(--muted); }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    line-height: 1;
-    letter-spacing: 0.02em;
-    margin-bottom: 3rem;
-  }
-
-  /* Products */
-  .products { background: var(--bg); }
-
-  .product-filters {
-    display: flex; gap: 0.75rem; margin-bottom: 2.5rem; flex-wrap: wrap;
-  }
-  .filter-btn {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.45rem 1rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: none;
-    transition: all 0.2s;
-  }
-  .filter-btn.active, .filter-btn:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
-
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .product-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    overflow: hidden;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-    cursor: none;
-  }
-  .product-card:hover { transform: translateY(-6px); border-color: rgba(255,77,0,0.4); }
-  .product-card:hover .product-img img { transform: scale(1.07); }
-
-  .product-img {
-    width: 100%; aspect-ratio: 3/4;
-    background: var(--surface);
-    position: relative;
-    overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .product-placeholder {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display);
-    font-size: 5rem;
-    color: rgba(255,255,255,0.04);
-    letter-spacing: 0.05em;
-    user-select: none;
-  }
-
-  .product-tag {
-    position: absolute; top: 12px; left: 12px;
-    background: var(--accent);
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.6rem;
-  }
-
-  .product-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  .product-card:hover .product-overlay { opacity: 1; }
-
-  .add-btn {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 0.8rem 1.8rem;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: none;
-    transition: background 0.2s, transform 0.15s;
-  }
-  .add-btn:hover { background: #e04000; transform: scale(1.05); }
-
-  .product-info {
-    padding: 1rem 1.2rem;
-    border-top: 1px solid var(--border);
-  }
-  .product-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    margin-bottom: 0.3rem;
-    letter-spacing: 0.02em;
-  }
-  .product-meta { display: flex; justify-content: space-between; align-items: center; }
-  .product-price { color: var(--accent2); font-weight: 600; font-family: var(--font-mono); font-size: 0.9rem; }
-  .product-sizes { font-size: 0.72rem; color: var(--muted); font-family: var(--font-mono); letter-spacing: 0.05em; }
-
-  /* Fake product image designs */
-  .img-1 { background: linear-gradient(135deg, #1c1c1c 0%, #2a1a0f 100%); }
-  .img-2 { background: linear-gradient(135deg, #0f1a1c 0%, #0a2a2a 100%); }
-  .img-3 { background: linear-gradient(135deg, #1a0f1c 0%, #2a0a2a 100%); }
-  .img-4 { background: linear-gradient(135deg, #1c1a0f 0%, #2a2a0a 100%); }
-  .img-5 { background: linear-gradient(135deg, #1a1a1a 0%, #2a1a1a 100%); }
-  .img-6 { background: linear-gradient(135deg, #0f1a0f 0%, #0a2a0a 100%); }
-
-  .product-graphic {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-  }
-
-  /* Drop SVG graphic inside product cards */
-  .graphic-circle {
-    width: 120px; height: 120px; border-radius: 50%;
-    border: 2px solid rgba(255,77,0,0.3);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .graphic-inner { width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,184,0,0.2); display: flex; align-items: center; justify-content: center; }
-  .graphic-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); opacity: 0.7; }
-
-  /* Feature strip */
-  .feature-strip {
-    background: var(--surface);
-    padding: 4rem 2.5rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .feature-item { display: flex; flex-direction: column; gap: 0.5rem; }
-  .feature-icon { font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem; }
-  .feature-title { font-weight: 600; font-size: 0.9rem; letter-spacing: 0.04em; }
-  .feature-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
-
-  /* About */
-  .about {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
-    align-items: center;
-    background: var(--bg);
-  }
-
-  .about-visual {
-    position: relative;
-    aspect-ratio: 3/4;
-    background: var(--card);
-    border: 1px solid var(--border);
-    overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .about-visual-inner {
-    font-family: var(--font-display);
-    font-size: 10rem;
-    color: rgba(255,255,255,0.03);
-    user-select: none;
-    position: absolute;
-  }
-
-  .about-accent-line {
-    width: 60px; height: 3px;
-    background: var(--accent);
-    margin-bottom: 2rem;
-  }
-
-  .about-text p { color: var(--muted); margin-bottom: 1.2rem; line-height: 1.8; font-size: 0.95rem; }
-
-  .about-stats {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem;
-  }
-  .stat { border-left: 2px solid var(--accent); padding-left: 1rem; }
-  .stat-number { font-family: var(--font-display); font-size: 2.5rem; color: var(--text); }
-  .stat-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-mono); }
-
-  /* Newsletter */
-  .newsletter {
-    background: var(--surface);
-    text-align: center;
-    padding: 6rem 2.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .newsletter-bg {
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(255,77,0,0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .newsletter-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    line-height: 1;
-    margin-bottom: 1rem;
-    position: relative; z-index: 1;
-  }
-  .newsletter p { color: var(--muted); max-width: 420px; margin: 0 auto 2.5rem; position: relative; z-index: 1; }
-
-  .newsletter-form { display: flex; gap: 0; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
-  .newsletter-form input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-right: none;
-    padding: 1rem 1.2rem;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .newsletter-form input::placeholder { color: var(--muted); }
-  .newsletter-form input:focus { border-color: var(--accent); }
-  .newsletter-form button {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 1rem 1.8rem;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: none;
-    transition: background 0.2s;
-    white-space: nowrap;
-  }
-  .newsletter-form button:hover { background: #e04000; }
-
-  /* Footer */
-  footer {
-    background: var(--bg);
-    padding: 4rem 2.5rem 2rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .footer-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 3rem;
-    margin-bottom: 3rem;
-  }
-
-  .footer-brand .nav-logo { display: block; margin-bottom: 1rem; font-size: 2.2rem; }
-  .footer-brand p { color: var(--muted); font-size: 0.85rem; max-width: 260px; line-height: 1.7; }
-
-  .footer-col h4 {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1.2rem;
-  }
-  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-  .footer-col a { color: var(--text); text-decoration: none; font-size: 0.88rem; opacity: 0.7; transition: opacity 0.2s, color 0.2s; }
-  .footer-col a:hover { opacity: 1; color: var(--accent); }
-
-  .footer-bottom {
-    border-top: 1px solid var(--border);
-    padding-top: 2rem;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 1rem;
-  }
-  .footer-bottom p { color: var(--muted); font-size: 0.78rem; font-family: var(--font-mono); }
-
-  .socials { display: flex; gap: 1rem; }
-  .social-link {
-    width: 36px; height: 36px;
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 700;
-    font-family: var(--font-mono);
-    transition: all 0.2s;
-  }
-  .social-link:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Cart sidebar */
-  .cart-sidebar {
-    position: fixed; right: 0; top: 0; bottom: 0;
-    width: 380px;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
-    z-index: 200;
-    transform: translateX(100%);
-    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-    display: flex; flex-direction: column;
-  }
-  .cart-sidebar.open { transform: translateX(0); }
-
-  .cart-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 199;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s;
-  }
-  .cart-overlay.open { opacity: 1; pointer-events: all; }
-
-  .cart-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .cart-header h3 { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 0.05em; }
-  .cart-close { background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: none; transition: color 0.2s; }
-  .cart-close:hover { color: var(--text); }
-
-  .cart-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
-  .cart-empty { text-align: center; color: var(--muted); padding: 3rem 0; font-size: 0.9rem; }
-
-  .cart-item {
-    display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border);
-  }
-  .cart-item-img {
-    width: 70px; height: 90px; background: var(--card);
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    font-size: 0.6rem; font-family: var(--font-mono); color: var(--muted); letter-spacing: 0.05em;
-  }
-  .cart-item-info { flex: 1; }
-  .cart-item-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
-  .cart-item-size { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); margin-bottom: 0.5rem; }
-  .cart-item-price { color: var(--accent2); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; }
-  .remove-item { background: none; border: none; color: var(--muted); cursor: none; font-size: 1.1rem; transition: color 0.2s; margin-left: auto; align-self: flex-start; }
-  .remove-item:hover { color: var(--accent); }
-
-  .cart-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-  .cart-total { display: flex; justify-content: space-between; margin-bottom: 1.2rem; font-weight: 600; }
-  .cart-total span:last-child { color: var(--accent2); font-family: var(--font-mono); }
-
-  .checkout-btn {
-    width: 100%;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: none;
-    transition: background 0.2s;
-  }
-  .checkout-btn:hover { background: #e04000; }
-
-
-  /* Checkout Modal */
-  .checkout-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.75);
-    z-index: 300;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.35s ease;
-    backdrop-filter: blur(4px);
-  }
-  .checkout-overlay.open { opacity: 1; pointer-events: all; }
-
-  .checkout-modal {
-    position: fixed; inset: 0;
-    z-index: 301;
-    display: flex; align-items: center; justify-content: center;
-    padding: 1rem;
-    pointer-events: none;
-    opacity: 0;
-    transform: scale(0.96) translateY(20px);
-    transition: opacity 0.35s ease, transform 0.35s ease;
-  }
-  .checkout-modal.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; }
-
-  .checkout-modal-inner {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    width: 100%; max-width: 900px;
-    max-height: 90vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
-  .co-header {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0;
-    background: var(--surface);
-    z-index: 10;
-  }
-  .co-logo { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
-  .co-logo span { color: var(--accent); }
-  .co-secure-badge {
-    display: flex; align-items: center; gap: 0.4rem;
-    font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.08em;
-  }
-  .co-close { background: none; border: none; color: var(--muted); font-size: 1.3rem; cursor: none; transition: color 0.2s; }
-  .co-close:hover { color: var(--text); }
-
-  .co-body { display: grid; grid-template-columns: 1fr 320px; }
-  .co-form-col { padding: 2rem; border-right: 1px solid var(--border); }
-  .co-summary-col { padding: 2rem; background: var(--bg); }
-  .co-section { margin-bottom: 2rem; }
-  .co-section-label {
-    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 1rem;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .express-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.2rem; }
-  .express-btn {
-    border: 1px solid var(--border); padding: 0.9rem 1rem;
-    display: flex; align-items: center; justify-content: center;
-    cursor: none; transition: all 0.2s; font-family: var(--font-mono);
-  }
-  .apple-pay { background: #000; color: #fff; }
-  .apple-pay:hover { background: #111; border-color: rgba(255,255,255,0.25); }
-  .google-pay { background: #1a1a2e; color: #fff; }
-  .google-pay:hover { background: #222240; border-color: rgba(255,255,255,0.25); }
-  .gpay-text { font-family: 'Outfit',sans-serif; font-size: 0.95rem; font-weight: 500; }
-  .gpay-text em { font-style: normal; font-weight: 700; }
-
-  .co-divider { text-align: center; position: relative; margin: 1rem 0; }
-  .co-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); }
-  .co-divider span {
-    background: var(--surface); padding: 0 1rem; position: relative;
-    font-size: 0.72rem; color: var(--muted); font-family: var(--font-mono);
-    letter-spacing: 0.08em; text-transform: uppercase;
-  }
-
-  .co-field-group { display: flex; flex-direction: column; gap: 0.75rem; }
-  .co-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  .co-field { display: flex; flex-direction: column; gap: 0.35rem; }
-  .co-field label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-  .co-field input, .co-field select {
-    background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 0.88rem;
-    outline: none; transition: border-color 0.2s; width: 100%; appearance: none;
-  }
-  .co-field input::placeholder { color: var(--muted); opacity: 0.6; }
-  .co-field input:focus, .co-field select:focus { border-color: var(--accent); }
-  .co-field select { cursor: none; }
-
-  .card-icons-row { display: flex; gap: 0.4rem; }
-  .card-icon { padding: 0.15rem 0.45rem; font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; border: 1px solid #ddd; }
-  .card-icon.visa { color: #1a1f71; background: #fff; }
-  .card-icon.mc { color: #eb001b; background: #fff; }
-  .card-icon.amex { color: #007bc1; background: #fff; }
-  .card-icon.disc { color: #f76f20; background: #fff; }
-
-  .co-pay-btn {
-    width: 100%; background: var(--accent); color: #fff; border: none;
-    padding: 1.1rem; font-family: var(--font-mono); font-size: 0.88rem;
-    letter-spacing: 0.12em; text-transform: uppercase; cursor: none;
-    margin-top: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-    transition: background 0.2s, transform 0.15s;
-  }
-  .co-pay-btn:hover { background: #e04000; transform: translateY(-1px); }
-
-  .co-trust-row {
-    display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-    margin-top: 1rem; font-family: var(--font-mono); font-size: 0.65rem;
-    letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase;
-  }
-
-  .co-summary-item { display: flex; gap: 0.8rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
-  .co-summary-item-img {
-    width: 52px; height: 64px; background: var(--card); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono); font-size: 0.55rem; color: var(--muted); flex-shrink: 0;
-  }
-  .co-summary-item-name { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.2rem; }
-  .co-summary-item-qty { font-size: 0.7rem; color: var(--muted); font-family: var(--font-mono); }
-  .co-summary-item-price { font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent2); font-weight: 700; }
-
-  .co-summary-lines { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; }
-  .co-summary-line { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--muted); font-family: var(--font-mono); }
-  .co-summary-total { font-size: 0.95rem; font-weight: 700; color: var(--text); border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.4rem; }
-  .co-summary-total span:last-child { color: var(--accent2); }
-
-  .co-badges { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
-  .co-badge-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem; color: var(--muted); font-family: var(--font-mono); letter-spacing: 0.05em; }
-
-  .success-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 400;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s ease; backdrop-filter: blur(6px);
-  }
-  .success-overlay.open { opacity: 1; pointer-events: all; }
-  .success-box {
-    background: var(--surface); border: 1px solid var(--border);
-    padding: 3rem 2.5rem; text-align: center; max-width: 400px; width: 90%;
-    transform: scale(0.92); transition: transform 0.35s ease;
-  }
-  .success-overlay.open .success-box { transform: scale(1); }
-  .success-icon { margin-bottom: 1.5rem; }
-  .success-title { font-family: var(--font-display); font-size: 2.5rem; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
-  .success-sub { color: var(--muted); font-size: 0.88rem; line-height: 1.7; margin-bottom: 2rem; }
-  .success-btn {
-    background: var(--accent); color: #fff; border: none; padding: 0.9rem 2rem;
-    font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.12em;
-    text-transform: uppercase; cursor: none; transition: background 0.2s;
-  }
-  .success-btn:hover { background: #e04000; }
-
-  @media (max-width: 768px) {
-    .co-body { grid-template-columns: 1fr; }
-    .co-form-col { border-right: none; border-bottom: 1px solid var(--border); padding: 1.5rem; }
-    .co-summary-col { padding: 1.5rem; }
-    .co-header { padding: 1.2rem 1.5rem; }
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
-    background: #fff;
-    color: #000;
-    padding: 0.8rem 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    z-index: 999;
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    border-left: 3px solid var(--accent);
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* Animations */
-  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { display: none; }
-    .hamburger { display: flex; }
-    section { padding: 4rem 1.5rem; }
-    .hero { padding: 0 1.5rem 3rem; }
-    .hero-sub { flex-direction: column; gap: 2rem; align-items: flex-start; }
-    .hero-cta { align-items: flex-start; }
-    .about { grid-template-columns: 1fr; gap: 2.5rem; }
-    .about-visual { display: none; }
-    .footer-top { grid-template-columns: 1fr 1fr; }
-    .footer-brand { grid-column: 1 / -1; }
-    .cart-sidebar { width: 100%; }
-    .feature-strip { padding: 3rem 1.5rem; }
-  }
-
-  /* Product Detail Modal */
-  .product-modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 500;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s ease;
-    backdrop-filter: blur(6px);
-  }
-  .product-modal-overlay.open { opacity: 1; pointer-events: all; }
-
-  .product-modal {
-    position: fixed; inset: 0;
-    z-index: 501;
-    display: flex; align-items: center; justify-content: center;
-    padding: 1rem;
-    pointer-events: none;
-    opacity: 0;
-    transform: scale(0.95) translateY(24px);
-    transition: opacity 0.35s ease, transform 0.35s ease;
-  }
-  .product-modal.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; }
-
-  .product-modal-inner {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    width: 100%; max-width: 880px;
-    max-height: 90vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .pm-image-col { position: relative; background: var(--bg); min-height: 480px; }
-  .pm-image-col img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-  .pm-tag {
-    position: absolute; top: 14px; left: 14px;
-    background: var(--accent);
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.6rem;
-  }
-
-  .pm-close {
-    position: absolute; top: 14px; right: 14px;
-    width: 36px; height: 36px;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-size: 1rem;
-    display: flex; align-items: center; justify-content: center;
-    cursor: none;
-    transition: background 0.2s;
-  }
-  .pm-close:hover { background: var(--accent); }
-
-  .pm-thumbs {
-    display: flex; gap: 0.5rem;
-    padding: 0.75rem;
-    background: var(--card);
-    border-top: 1px solid var(--border);
-    overflow-x: auto;
-  }
-  .pm-thumb {
-    width: 56px; height: 68px;
-    object-fit: cover;
-    border: 2px solid transparent;
-    cursor: none;
-    flex-shrink: 0;
-    transition: border-color 0.2s;
-    opacity: 0.6;
-    transition: all 0.2s;
-  }
-  .pm-thumb.active, .pm-thumb:hover { border-color: var(--accent); opacity: 1; }
-
-  .pm-info-col { padding: 2rem; display: flex; flex-direction: column; gap: 1.2rem; overflow-y: auto; }
-
-  .pm-category {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  .pm-name {
-    font-family: var(--font-display);
-    font-size: 2.2rem;
-    line-height: 1;
-    letter-spacing: 0.03em;
-  }
-
-  .pm-price {
-    font-family: var(--font-mono);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent2);
-  }
-
-  .pm-divider { height: 1px; background: var(--border); }
-
-  .pm-label {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.6rem;
-  }
-
-  /* Colors */
-  .pm-colors { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-  .pm-color {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: none;
-    transition: all 0.2s;
-    position: relative;
-  }
-  .pm-color.active { border-color: var(--text); transform: scale(1.15); }
-  .pm-color:hover { transform: scale(1.1); }
-  .pm-color-label {
-    font-size: 0.75rem; color: var(--muted);
-    font-family: var(--font-mono);
-    margin-top: 0.5rem;
-  }
-
-  /* Sizes */
-  .pm-sizes { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .pm-size {
-    min-width: 44px; height: 40px;
-    padding: 0 0.75rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    cursor: none;
-    transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .pm-size:hover { border-color: var(--accent); color: var(--accent); }
-  .pm-size.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .pm-size.soldout { opacity: 0.3; text-decoration: line-through; cursor: not-allowed; }
-
-  /* Description */
-  .pm-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.8; }
-
-  /* Details accordion */
-  .pm-details { border-top: 1px solid var(--border); }
-  .pm-detail-row {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
-    cursor: none;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .pm-detail-row span { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
-  .pm-detail-row .pm-detail-val { color: var(--text); font-size: 0.8rem; letter-spacing: 0; text-transform: none; font-family: var(--font-body); }
-
-  /* Add to bag button */
-  .pm-add-btn {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 1rem;
-    width: 100%;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: none;
-    margin-top: auto;
-    transition: background 0.2s, transform 0.15s;
-    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-  }
-  .pm-add-btn:hover { background: #e04000; transform: translateY(-1px); }
-  .pm-add-btn.no-size { background: var(--card); border: 1px solid var(--border); color: var(--muted); }
-
-  @media (max-width: 768px) {
-    .product-modal-inner { grid-template-columns: 1fr; }
-    .pm-image-col { min-height: 300px; }
-    .pm-info-col { padding: 1.5rem; }
-  }
-</style>
-</head>
-<body>
-
-<div id="cursor"></div>
-
-<!-- Cart overlay -->
-<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
-
-<!-- Cart sidebar -->
-<div class="cart-sidebar" id="cartSidebar">
-  <div class="cart-header">
-    <h3>YOUR BAG</h3>
-    <button class="cart-close" onclick="toggleCart()">✕</button>
-  </div>
-  <div class="cart-body" id="cartBody">
-    <p class="cart-empty">Your bag is empty.</p>
-  </div>
-  <div class="cart-footer" id="cartFooter" style="display:none">
-    <div class="cart-total">
-      <span>TOTAL</span>
-      <span id="cartTotal">$0.00</span>
-    </div>
-    <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>
-  </div>
-</div>
-
-<!-- Product Detail Modal -->
-<div class="product-modal-overlay" id="productModalOverlay" onclick="closeProductModal()"></div>
-<div class="product-modal" id="productModal">
-  <div class="product-modal-inner">
-    <div class="pm-image-col">
-      <img id="pm-main-img" src="" alt="">
-      <span class="pm-tag" id="pm-tag"></span>
-      <button class="pm-close" onclick="closeProductModal()">✕</button>
-      <div class="pm-thumbs" id="pm-thumbs"></div>
-    </div>
-    <div class="pm-info-col">
-      <div>
-        <div class="pm-category" id="pm-category"></div>
-        <div class="pm-name" id="pm-name"></div>
-      </div>
-      <div class="pm-price" id="pm-price"></div>
-      <div class="pm-divider"></div>
-      <div>
-        <div class="pm-label">Color — <span class="pm-color-label" id="pm-color-label">Select</span></div>
-        <div class="pm-colors" id="pm-colors"></div>
-      </div>
-      <div>
-        <div class="pm-label">Size — <span class="pm-color-label" id="pm-size-label">Select</span></div>
-        <div class="pm-sizes" id="pm-sizes"></div>
-      </div>
-      <div class="pm-divider"></div>
-      <p class="pm-desc" id="pm-desc"></p>
-      <div class="pm-details" id="pm-details"></div>
-      <button class="pm-add-btn no-size" id="pm-add-btn" onclick="addFromModal()">Select a Size</button>
-    </div>
-  </div>
-</div>
-
-<!-- Checkout Modal Overlay -->
-<div class="checkout-overlay" id="checkoutOverlay" onclick="closeCheckout()"></div>
-
-<!-- Checkout Modal -->
-<div class="checkout-modal" id="checkoutModal">
-  <div class="checkout-modal-inner">
-    <div class="co-header">
-      <div>
-        <div class="co-logo">BLVCK<span>.</span>CANVAS</div>
-        <div class="co-secure-badge">
-          <svg width="11" height="13" viewBox="0 0 12 14" fill="none"><path d="M6 0L0.5 2.5V7C0.5 10.2 2.9 13.2 6 14C9.1 13.2 11.5 10.2 11.5 7V2.5L6 0Z" fill="rgba(255,77,0,0.9)"/><path d="M4 7L5.5 8.5L8.5 5.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Secure Checkout — SSL Encrypted
-        </div>
-      </div>
-      <button class="co-close" onclick="closeCheckout()">✕</button>
-    </div>
-    <div class="co-body">
-      <!-- Left: Form -->
-      <div class="co-form-col">
-        <!-- Express Pay -->
-        <div class="co-section">
-          <div class="co-section-label">Express Pay</div>
-          <div class="express-pay-grid">
-            <button class="express-btn apple-pay" onclick="handleExpressPay('Apple Pay')">
-              <span style="font-size:0.9rem;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:0.02em;">&#63743; Pay</span>
-            </button>
-            <button class="express-btn google-pay" onclick="handleExpressPay('Google Pay')">
-              <span class="gpay-text"><em style="color:#4285F4">G</em><em style="color:#EA4335">o</em><em style="color:#FBBC05">o</em><em style="color:#4285F4">g</em><em style="color:#34A853">l</em><em style="color:#EA4335">e</em>&nbsp;Pay</span>
-            </button>
-          </div>
-          <div class="co-divider"><span>or pay with card</span></div>
-        </div>
-        <!-- Contact -->
-        <div class="co-section">
-          <div class="co-section-label">Contact</div>
-          <div class="co-field"><label>Email</label><input type="email" placeholder="your@email.com" id="co-email"></div>
-        </div>
-        <!-- Shipping -->
-        <div class="co-section">
-          <div class="co-section-label">Shipping Address</div>
-          <div class="co-field-group">
-            <div class="co-field-row">
-              <div class="co-field"><label>First Name</label><input type="text" placeholder="John" id="co-fname"></div>
-              <div class="co-field"><label>Last Name</label><input type="text" placeholder="Doe" id="co-lname"></div>
-            </div>
-            <div class="co-field"><label>Address</label><input type="text" placeholder="123 Main St" id="co-address"></div>
-            <div class="co-field-row">
-              <div class="co-field"><label>City</label><input type="text" placeholder="New York" id="co-city"></div>
-              <div class="co-field" style="max-width:130px"><label>ZIP</label><input type="text" placeholder="10001" id="co-zip"></div>
-            </div>
-            <div class="co-field">
-              <label>Country</label>
-              <select id="co-country">
-                <option>United States</option><option>Canada</option><option>United Kingdom</option>
-                <option>Australia</option><option>Germany</option><option>France</option><option>Other</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <!-- Payment -->
-        <div class="co-section">
-          <div class="co-section-label">Payment
-            <div class="card-icons-row">
-              <div class="card-icon visa">VISA</div>
-              <div class="card-icon mc">MC</div>
-              <div class="card-icon amex">AMEX</div>
-              <div class="card-icon disc">DISC</div>
-            </div>
-          </div>
-          <div class="co-field-group">
-            <div class="co-field card-field">
-              <label>Card Number</label>
-              <input type="text" placeholder="1234 5678 9012 3456" id="co-card" maxlength="19" oninput="formatCard(this)">
-            </div>
-            <div class="co-field-row">
-              <div class="co-field"><label>Expiry</label><input type="text" placeholder="MM / YY" id="co-expiry" maxlength="7" oninput="formatExpiry(this)"></div>
-              <div class="co-field"><label>CVV</label><input type="text" placeholder="123" id="co-cvv" maxlength="4"></div>
-            </div>
-            <div class="co-field"><label>Name on Card</label><input type="text" placeholder="John Doe" id="co-cardname"></div>
-          </div>
-        </div>
-        <button class="co-pay-btn" onclick="handlePay()">
-          <svg width="13" height="15" viewBox="0 0 12 14" fill="none"><path d="M6 0L0.5 2.5V7C0.5 10.2 2.9 13.2 6 14C9.1 13.2 11.5 10.2 11.5 7V2.5L6 0Z" fill="rgba(255,255,255,0.35)"/><path d="M4 7L5.5 8.5L8.5 5.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Pay <span id="co-total-btn">$0.00</span> Securely
-        </button>
-        <div class="co-trust-row">
-          <span>256-bit SSL</span><span>·</span><span>PCI Compliant</span><span>·</span><span>Free Returns</span>
-        </div>
-      </div>
-      <!-- Right: Order Summary -->
-      <div class="co-summary-col">
-        <div class="co-section-label" style="margin-bottom:1.2rem">Order Summary</div>
-        <div id="co-items-list"></div>
-        <div class="co-summary-lines">
-          <div class="co-summary-line"><span>Subtotal</span><span id="co-subtotal">$0.00</span></div>
-          <div class="co-summary-line"><span>Shipping</span><span style="color:var(--accent)">FREE</span></div>
-          <div class="co-summary-line co-summary-total"><span>Total</span><span id="co-grand-total">$0.00</span></div>
-        </div>
-        <div class="co-badges">
-          <div class="co-badge-item">
-            <svg width="13" height="15" viewBox="0 0 12 14" fill="none"><path d="M6 0L0.5 2.5V7C0.5 10.2 2.9 13.2 6 14C9.1 13.2 11.5 10.2 11.5 7V2.5L6 0Z" fill="var(--accent)"/><path d="M4 7L5.5 8.5L8.5 5.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Secure Payment
-          </div>
-          <div class="co-badge-item">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="var(--accent)" stroke-width="1.2"/><path d="M7 4v3l2 2" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round"/></svg>
-            Ships in 2–4 Days
-          </div>
-          <div class="co-badge-item">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Free Returns
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Success Modal -->
-<div class="success-overlay" id="successOverlay">
-  <div class="success-box">
-    <div class="success-icon">
-      <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="var(--accent)" stroke-width="1.5"/><path d="M14 24l8 8L34 16" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <h2 class="success-title">ORDER CONFIRMED</h2>
-    <p class="success-sub">Your drop is secured. Check your inbox — tracking details land within 24 hours.</p>
-    <button class="success-btn" onclick="closeSuccess()">Back to Shop</button>
-  </div>
-</div>
-
-<!-- Nav -->
-<nav id="navbar">
-  <a href="#" class="nav-logo">BLVCK<span>.</span>CANVAS</a>
-  <ul class="nav-links">
-    <li><a href="#collection">Collection</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-  <div class="nav-actions">
-    <button class="nav-cart" onclick="toggleCart()">
-      BAG <span class="cart-count" id="cartCount">0</span>
-    </button>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-
-<!-- Mobile menu -->
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#collection" onclick="toggleMenu()">Collection</a>
-  <a href="#about" onclick="toggleMenu()">About</a>
-  <a href="#contact" onclick="toggleMenu()">Contact</a>
-</div>
-
-<!-- Hero -->
-<section class="hero" id="home">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-badge">SS 2025 Drop 01</div>
-  <h1 class="hero-title">
-    BLVCK<br>
-    <span class="outline">CAN</span><span class="accent">VAS</span>
-  </h1>
-  <div class="hero-sub">
-    <p class="hero-desc">
-      Wear the streets. Loud in movement, silent in ego.
-      Built for those who move different — limited drops, unlimited identity.
-    </p>
-    <div class="hero-cta">
-      <a href="#collection" class="btn-primary">Shop Collection</a>
-      <a href="#about" class="btn-ghost">Our Story</a>
-      <span class="hero-scroll">Scroll to explore</span>
-    </div>
-  </div>
-</section>
-
-<!-- Marquee -->
-<div class="marquee-wrap">
-  <div class="marquee-track" id="marqueeTrack">
-    <div class="marquee-item">BLVCK CANVAS <span>★</span> LIMITED DROPS <span>★</span> STREETWEAR REDEFINED <span>★</span> NYC MADE <span>★</span> AUTHENTIC CULTURE <span>★</span> WEAR THE STREETS <span>★</span></div>
-    <div class="marquee-item">BLVCK CANVAS <span>★</span> LIMITED DROPS <span>★</span> STREETWEAR REDEFINED <span>★</span> NYC MADE <span>★</span> AUTHENTIC CULTURE <span>★</span> WEAR THE STREETS <span>★</span></div>
-  </div>
-</div>
-
-<!-- Products -->
-<section class="products" id="collection">
-  <div class="reveal">
-    <p class="section-label">SS Drop 01</p>
-    <h2 class="section-title">THE COLLECTION</h2>
-  </div>
-  <div class="product-filters reveal">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="tees">Tees</button>
-    <button class="filter-btn" data-filter="hoodies">Hoodies</button>
-    <button class="filter-btn" data-filter="bottoms">Bottoms</button>
-    <button class="filter-btn" data-filter="accessories">Accessories & Bags</button>
-  </div>
-  <div class="product-grid" id="productGrid">
-    <!-- Products injected by JS -->
-  </div>
-</section>
-
-<!-- Feature strip -->
-<div class="feature-strip">
-  <div class="feature-item reveal">
-    <div class="feature-title">Limited Drops Only</div>
-    <div class="feature-desc">Every piece is limited. No restocks, no reprints. Own something real.</div>
-  </div>
-  <div class="feature-item reveal">
-    <div class="feature-title">Premium Fabrics</div>
-    <div class="feature-desc">400gsm heavyweight cotton. Built to last as long as the culture.</div>
-  </div>
-  <div class="feature-item reveal">
-    <div class="feature-title">Ethically Sourced</div>
-    <div class="feature-desc">Every thread traced. We know where it comes from — you should too.</div>
-  </div>
-  <div class="feature-item reveal">
-    <div class="feature-title">Free Shipping $80+</div>
-    <div class="feature-desc">Fast, tracked, and packed like it matters. Because it does.</div>
-  </div>
-</div>
-
-<!-- About -->
-<section class="about" id="about">
-  <div class="about-visual reveal">
-    <div class="about-visual-inner">BC</div>
-    <svg width="200" height="200" viewBox="0 0 200 200" style="position:relative;z-index:1">
-      <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,77,0,0.15)" stroke-width="1" stroke-dasharray="8,6"/>
-      <circle cx="100" cy="100" r="60" fill="none" stroke="rgba(255,184,0,0.1)" stroke-width="1"/>
-      <circle cx="100" cy="100" r="30" fill="rgba(255,77,0,0.12)"/>
-      <text x="100" y="108" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="22" fill="rgba(255,77,0,0.8)" letter-spacing="2">BC</text>
-    </svg>
-  </div>
-  <div class="about-text">
-    <div class="reveal">
-      <p class="section-label">Who We Are</p>
-      <h2 class="section-title">BUILT IN<br>THE STREETS</h2>
-      <div class="about-accent-line"></div>
-      <p>BLVCK CANVAS started in a Queens apartment in 2021 — two designers, a heat press, and a vision. No investor money. No shortcuts. Just product that means something.</p>
-      <p>We make clothes for the ones who already know who they are. Not for trends, not for clout — for culture. Every drop tells a story. Every piece is a statement.</p>
-      <p>100 pieces per drop. Sell out or burn out. We chose sell out — every time.</p>
-    </div>
-    <div class="about-stats reveal">
-      <div class="stat">
-        <div class="stat-number">14</div>
-        <div class="stat-label">Drops Completed</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number">100%</div>
-        <div class="stat-label">Sell-out Rate</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number">42K</div>
-        <div class="stat-label">Community Members</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number">12</div>
-        <div class="stat-label">Cities Repping</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Newsletter -->
-<div class="newsletter" id="contact">
-  <div class="newsletter-bg"></div>
-  <p class="section-label" style="position:relative;z-index:1">Never Miss a Drop</p>
-  <h2 class="newsletter-title reveal">DROP ALERTS.<br>FIRST ACCESS.</h2>
-  <p class="reveal">Join the inner circle. Get early access to drops, exclusive collabs, and culture content — before anyone else.</p>
-  <form class="newsletter-form reveal" onsubmit="handleSubscribe(event)">
-    <input type="email" placeholder="your@email.com" id="emailInput" required>
-    <button type="submit">Join the List</button>
-  </form>
-</div>
-
-<!-- Footer -->
-<footer>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <a href="#" class="nav-logo">BLVCK<span>.</span>CANVAS</a>
-      <p>Wear the streets. Limited drops, unlimited identity. NYC-born, culture-driven.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Shop</h4>
-      <ul>
-        <li><a href="#collection">New Arrivals</a></li>
-        <li><a href="#collection">Tees</a></li>
-        <li><a href="#collection">Hoodies</a></li>
-        <li><a href="#collection">Bottoms</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Info</h4>
-      <ul>
-        <li><a href="#about">About Us</a></li>
-        <li><a href="#">Sizing Guide</a></li>
-        <li><a href="#">Returns</a></li>
-        <li><a href="#">FAQ</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Connect</h4>
-      <ul>
-        <li><a href="#">Instagram</a></li>
-        <li><a href="#">TikTok</a></li>
-        <li><a href="#">Twitter / X</a></li>
-        <li><a href="#">Community</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2025 BLVCK CANVAS. All rights reserved.</p>
-    <div class="socials">
-      <a href="#" class="social-link">IG</a>
-      <a href="#" class="social-link">TK</a>
-      <a href="#" class="social-link">X</a>
-    </div>
-  </div>
-</footer>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-const products = [
-  // Tees
-  {
-    id:1, name:'Archive Tee Vol.1', price:55, category:'tees', tag:'New', symbol:'T1',
-    sizes:'XS S M L XL',
-    img:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Washed Black',hex:'#1a1a1a'},{name:'Vintage White',hex:'#f5f0e8'},{name:'Rust Orange',hex:'#c94a1a'}],
-    material:'400gsm heavyweight pre-shrunk cotton, garment-washed for a broken-in feel.',
-    description:'The Archive Tee Vol.1 is where it all started. An oversized silhouette with drop shoulders, raw-hem detail at the cuffs, and a subtle distressed chest print. Wear it like you\'ve had it for years.',
-    details:{'Fit':'Oversized / Boxy','Origin':'Manufactured in Portugal','Care':'Cold wash inside out, hang dry','SKU':'T1-001-SS25'}
-  },
-  {
-    id:4, name:'Graffiti Tee Vol.2', price:60, category:'tees', tag:'New', symbol:'T2',
-    sizes:'XS S M L XL XXL',
-    img:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Jet Black',hex:'#0a0a0a'},{name:'Cement Grey',hex:'#888888'},{name:'Bone',hex:'#e8e0d0'}],
-    material:'380gsm ringspun cotton blend. Screen-printed with water-based inks for a soft, breathable feel.',
-    description:'Vol.2 in our Archive series pushes the print work harder. Inspired by Queens graf walls \u2014 layered type, worn edges, zero compromise. The kind of tee that makes people ask where you got it.',
-    details:{'Fit':'Regular / Slightly Oversized','Origin':'Manufactured in Portugal','Care':'Cold wash, lay flat to dry','SKU':'T2-002-SS25'}
-  },
-  {
-    id:7, name:'Blvck Oversized Tee', price:65, category:'tees', tag:'Drop 02', symbol:'T3',
-    sizes:'S M L XL XXL',
-    img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Pitch Black',hex:'#050505'},{name:'Washed Navy',hex:'#1a2540'},{name:'Military Olive',hex:'#3d4a2e'}],
-    material:'420gsm double-faced cotton, brushed interior. Heavyweight enough to hold structure, soft enough to live in.',
-    description:'The signature silhouette. Extended body, dropped sleeves, and a chest hit logo in rubberized ink. When the fit matters more than the occasion.',
-    details:{'Fit':'Extreme Oversized','Origin':'Manufactured in Turkey','Care':'Cold wash inside out, tumble dry low','SKU':'T3-003-D02'}
-  },
-  {
-    id:8, name:'Canvas Acid Wash Tee', price:70, category:'tees', tag:'Limited', symbol:'T4',
-    sizes:'XS S M L',
-    img:'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Acid Black',hex:'#2a2020'},{name:'Acid Slate',hex:'#2a2a35'},{name:'Acid Sand',hex:'#5a4a35'}],
-    material:'360gsm garment-dyed cotton. Each piece is hand-treated — no two are exactly the same.',
-    description:'Limited to 40 units. The acid wash process creates a one-of-one result on every tee. Lived-in look, luxury weight. Not a reprint. Not a restock.',
-    details:{'Fit':'Oversized','Origin':'Hand-treated in NYC','Care':'Cold wash separately, hang dry','SKU':'T4-004-LTD'}
-  },
-  // Hoodies
-  {
-    id:2, name:'Shadow Hoodie', price:120, category:'hoodies', tag:'Limited', symbol:'H1',
-    sizes:'S M L XL',
-    img:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Obsidian',hex:'#0d0d0d'},{name:'Charcoal',hex:'#2e2e2e'},{name:'Ash',hex:'#5a5a5a'}],
-    material:'520gsm 100% heavyweight fleece cotton. Kangaroo pocket, ribbed cuffs and hem, premium drawcord.',
-    description:'The hoodie that started the brand. Designed for late nights, early mornings, and everything in between. A thick fleece shell with a barely-there logo \u2014 because the fit speaks first.',
-    details:{'Fit':'Relaxed / Oversized','Origin':'Manufactured in Portugal','Care':'Machine wash cold, tumble dry low','SKU':'H1-005-LTD'}
-  },
-  {
-    id:5, name:'Street Puffer Jacket', price:280, category:'hoodies', tag:'Sold Out', symbol:'J1',
-    sizes:'S M L',
-    img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Stealth Olive',hex:'#2c3020'}],
-    material:'Outer: 100% ripstop nylon. Fill: 90/10 down cluster. Lining: 100% recycled polyester.',
-    description:'The piece everyone\'s been asking about. A technical puffer with a street soul \u2014 clean lines, hidden seam pockets, and a matte finish that doesn\'t scream. Sold out in 9 minutes. Waitlist open.',
-    details:{'Fit':'Slim / True to Size','Origin':'Manufactured in Vietnam','Care':'Dry clean recommended','SKU':'J1-006-SO'}
-  },
-  {
-    id:9, name:'Blvck Zip-Up Hoodie', price:135, category:'hoodies', tag:'New', symbol:'H2',
-    sizes:'S M L XL',
-    img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Midnight Black',hex:'#0a0a0a'},{name:'Storm Grey',hex:'#3a3a3a'},{name:'Deep Navy',hex:'#0d1b2a'}],
-    material:'480gsm brushed fleece, 80% cotton / 20% polyester. YKK metal zipper, flat-lock stitching throughout.',
-    description:'A zip-up built to layer. Structured enough to wear out, comfortable enough to sleep in. Front YKK zip with a rubberized BC pull-tab. Two hand pockets, zero compromise.',
-    details:{'Fit':'Relaxed','Origin':'Manufactured in Portugal','Care':'Cold wash, hang dry','SKU':'H2-007-SS25'}
-  },
-  {
-    id:10, name:'Urban Fleece Crewneck', price:110, category:'hoodies', tag:'Drop 02', symbol:'H3',
-    sizes:'XS S M L XL',
-    img:'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Washed Black',hex:'#1a1a1a'},{name:'Ecru',hex:'#ece5d0'},{name:'Faded Burgundy',hex:'#5a1a20'}],
-    material:'460gsm loopback cotton fleece. Garment-washed for instant comfort. Ribbed collar, cuffs, and hem.',
-    description:'The everyday essential. A crewneck that goes with everything and stands on its own. Heavyweight fleece, minimal branding, maximum comfort. Drop 02\'s most wearable piece.',
-    details:{'Fit':'Slightly Oversized','Origin':'Manufactured in Turkey','Care':'Machine wash cold inside out','SKU':'H3-008-D02'}
-  },
-  // Bottoms
-  {
-    id:3, name:'Canvas Cargo Pants', price:145, category:'bottoms', tag:'Drop 01', symbol:'P1',
-    sizes:'28 30 32 34',
-    img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Army Green',hex:'#3b4a2f'},{name:'Stone',hex:'#8a7a6a'}],
-    material:'100% 8oz cotton ripstop canvas. Six cargo pockets, zip fly, D-ring belt loops.',
-    description:'Utility meets culture. Six pockets, a relaxed tapered leg, and hardware that holds up. Built for the ones who carry a lot \u2014 on and off the block.',
-    details:{'Fit':'Relaxed Tapered','Origin':'Manufactured in Japan','Care':'Machine wash cold, line dry','SKU':'P1-009-D01'}
-  },
-  {
-    id:11, name:'Blvck Jogger Pants', price:95, category:'bottoms', tag:'New', symbol:'P2',
-    sizes:'S M L XL',
-    img:'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Jet Black',hex:'#050505'},{name:'Graphite',hex:'#3a3a3a'},{name:'Slate Blue',hex:'#2a3550'}],
-    material:'380gsm French terry cotton. Elasticated waist with internal drawcord. Ribbed ankle cuffs.',
-    description:'The BC Jogger is not an afterthought. A heavy French terry body, tapered through the thigh, and a clean cuff at the ankle. Dress it up, dress it down \u2014 it survives both.',
-    details:{'Fit':'Tapered / Relaxed Thigh','Origin':'Manufactured in Portugal','Care':'Cold wash, tumble dry low','SKU':'P2-010-SS25'}
-  },
-  {
-    id:12, name:'Street Denim Jeans', price:130, category:'bottoms', tag:'Limited', symbol:'P3',
-    sizes:'28 30 32 34 36',
-    img:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Raw Indigo',hex:'#1a2040'},{name:'Washed Black',hex:'#202020'},{name:'Stone Wash',hex:'#6a7a8a'}],
-    material:'14oz Japanese selvedge denim, 98% cotton / 2% elastane. YKK brass hardware.',
-    description:'Premium denim with a street edge. A slim-straight cut, mid-rise waist, and subtle distressing that happened by design, not accident. The jeans you\'ll still be wearing in five years.',
-    details:{'Fit':'Slim Straight','Origin':'Japan denim, assembled in Portugal','Care':'Wash sparingly, cold, inside out','SKU':'P3-011-LTD'}
-  },
-  {
-    id:13, name:'Canvas Track Pants', price:100, category:'bottoms', tag:'Drop 02', symbol:'P4',
-    sizes:'S M L XL XXL',
-    img:'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Midnight',hex:'#0a0a12'},{name:'Velocity Red',hex:'#cc2200'},{name:'Marathon Green',hex:'#1a3a1a'}],
-    material:'100% recycled polyester track weave. Side zip ankle vents, elastic waist, side stripe tape detail.',
-    description:'Sport heritage, streetwear future. A technical track pant in recycled poly with contrast side tape and zip vents at the ankle. Drop 02\'s fastest-moving piece.',
-    details:{'Fit':'Relaxed','Origin':'Manufactured in Vietnam','Care':'Machine wash cold, hang dry','SKU':'P4-012-D02'}
-  },
-  // Accessories
-  {
-    id:6, name:'Logo Cap', price:45, category:'accessories', tag:'Restock', symbol:'A1',
-    sizes:'One Size',
-    img:'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Bone',hex:'#e0d8c8'},{name:'Washed Olive',hex:'#4a5038'}],
-    material:'6-panel structured crown, 100% cotton twill. Embroidered BC logo. Adjustable brass-buckle strap.',
-    description:'The classic. Six-panel structured cap with a subtle embroidered logo on a tonal base. Low-key enough for every fit, recognizable to the ones who know.',
-    details:{'Fit':'Adjustable / One Size','Origin':'Manufactured in Bangladesh','Care':'Spot clean only','SKU':'A1-013-REST'}
-  },
-  {
-    id:14, name:'Blvck Tote Bag', price:55, category:'accessories', tag:'New', symbol:'A2',
-    sizes:'One Size',
-    img:'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Natural Canvas',hex:'#d4c9a8'},{name:'Blvck Canvas',hex:'#1a1a1a'},{name:'Rust',hex:'#8a3a1a'}],
-    material:'16oz heavyweight canvas cotton. Reinforced base, 28" drop handles, interior zip pocket.',
-    description:'Carry it all. A heavyweight canvas tote built to replace the bags you\'ve been throwing away. Wide enough for a 16" laptop, strong enough to last years.',
-    details:{'Fit':'One Size / 18"W x 16"H','Origin':'Manufactured in India','Care':'Spot clean, air dry','SKU':'A2-014-SS25'}
-  },
-  {
-    id:15, name:'Street Backpack', price:95, category:'accessories', tag:'Limited', symbol:'A3',
-    sizes:'One Size',
-    img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'All Black',hex:'#0a0a0a'},{name:'Coyote Brown',hex:'#5a4030'}],
-    material:'900D ballistic nylon exterior, 210D nylon lining. Padded 15" laptop sleeve, YKK zippers throughout.',
-    description:'Built like gear, worn like culture. A 20L technical pack with a padded laptop sleeve, waterproof base panel, and clean external profile. Everything you need, nothing you don\'t.',
-    details:{'Fit':'One Size / 20L','Origin':'Manufactured in Vietnam','Care':'Wipe with damp cloth','SKU':'A3-015-LTD'}
-  },
-  {
-    id:16, name:'Canvas Shoulder Bag', price:75, category:'accessories', tag:'Drop 02', symbol:'A4',
-    sizes:'One Size',
-    img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80',
-    imgs:[
-      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&h=1040&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1040&fit=crop&q=80'
-    ],
-    colors:[{name:'Washed Black',hex:'#1a1a1a'},{name:'Desert Sand',hex:'#b8a080'},{name:'Deep Olive',hex:'#3a4025'}],
-    material:'12oz canvas cotton with full leather trim. Adjustable webbing strap, antique brass hardware.',
-    description:'The Drop 02 everyday carry. A mid-size shoulder bag with leather trim and an adjustable strap that actually stays put. Main compartment, front slip pocket, interior key clip.',
-    details:{'Fit':'One Size / 12"W x 9"H','Origin':'Manufactured in India','Care':'Leather condition every 3 months','SKU':'A4-016-D02'}
-  },
-];
-
-let cart = [];
-let currentFilter = 'all';
-let activeProductId = null;
-let selectedColor = null;
-let selectedSize = null;
-
-function renderProducts(filter) {
-  const grid = document.getElementById('productGrid');
-  const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
-  grid.innerHTML = filtered.map(p => `
-    <div class="product-card reveal" data-category="${p.category}" onclick="openProductModal(${p.id})">
-      <div class="product-img">
-        <img src="${p.img}" alt="${p.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s ease;">
-        ${p.tag !== 'Sold Out' ? `<span class="product-tag">${p.tag}</span>` : `<span class="product-tag" style="background:#444">${p.tag}</span>`}
-        <div class="product-overlay">
-          ${p.tag !== 'Sold Out'
-            ? `<button class="add-btn" onclick="event.stopPropagation(); openProductModal(${p.id})">View Details</button>`
-            : `<button class="add-btn" style="background:#444;cursor:default" disabled>Sold Out</button>`}
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-name">${p.name}</div>
-        <div class="product-meta">
-          <span class="product-price">$${p.price}</span>
-          <span class="product-sizes">${p.sizes.split(' ').slice(0,4).join(' / ')}${p.sizes.split(' ').length > 4 ? ' +' : ''}</span>
-        </div>
-      </div>
-    </div>
-  `).join('');
-  observeReveal();
+cat > /home/claude/backtest.py << 'PYEOF'
+import pandas as pd
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import warnings, json
+warnings.filterwarnings('ignore')
+
+np.random.seed(42)
+
+# ── CONFIG ────────────────────────────────────────────────────────────────────
+START           = '2014-01-01'
+END             = '2024-12-31'
+INITIAL_CAPITAL = 100_000
+RISK_PCT        = 0.01
+RR              = 2.0
+ATR_STOP_MULT   = 1.0
+
+COLORS = {
+    'S&R':          '#378ADD',
+    'Price Action': '#1D9E75',
+    'Wyckoff':      '#BA7517',
+    'Order Flow':   '#D4537E',
+    'ICT / SMC':    '#7F77DD',
+    'PO3 / AMD':    '#639922',
+    'TJR':          '#D85A30',
+    'Combined':     '#E24B4A',
 }
 
-function openProductModal(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  activeProductId = id;
-  selectedColor = null;
-  selectedSize = null;
+# ── SYNTHETIC SPY-LIKE DATA ───────────────────────────────────────────────────
+print("Generating realistic SPY-like data 2014–2024...")
+dates = pd.bdate_range(start=START, end=END)
+N = len(dates)
 
-  // Main image
-  document.getElementById('pm-main-img').src = p.imgs[0];
-  document.getElementById('pm-main-img').alt = p.name;
-  document.getElementById('pm-tag').textContent = p.tag;
-  document.getElementById('pm-tag').style.background = p.tag === 'Sold Out' ? '#444' : 'var(--accent)';
-  document.getElementById('pm-category').textContent = p.category.toUpperCase();
-  document.getElementById('pm-name').textContent = p.name;
-  document.getElementById('pm-price').textContent = '$' + p.price;
-  document.getElementById('pm-desc').textContent = p.description;
-
-  // Thumbnails
-  document.getElementById('pm-thumbs').innerHTML = p.imgs.map((src, i) => `
-    <img class="pm-thumb ${i === 0 ? 'active' : ''}" src="${src}" alt="${p.name} view ${i+1}"
-      onclick="switchModalImg(this, '${src}')" loading="lazy">
-  `).join('');
-
-  // Colors
-  document.getElementById('pm-color-label').textContent = 'Select';
-  document.getElementById('pm-colors').innerHTML = p.colors.map(c => `
-    <div class="pm-color" style="background:${c.hex}" title="${c.name}"
-      onclick="selectModalColor(this, '${c.name}')"></div>
-  `).join('');
-
-  // Sizes
-  document.getElementById('pm-size-label').textContent = 'Select';
-  const isSoldOut = p.tag === 'Sold Out';
-  document.getElementById('pm-sizes').innerHTML = p.sizes.split(' ').map(s => `
-    <button class="pm-size ${isSoldOut ? 'soldout' : ''}" ${isSoldOut ? 'disabled' : ''} onclick="selectModalSize(this, '${s}')">${s}</button>
-  `).join('');
-
-  // Details
-  document.getElementById('pm-details').innerHTML = Object.entries(p.details).map(([k, v]) => `
-    <div class="pm-detail-row">
-      <span>${k}</span>
-      <span class="pm-detail-val">${v}</span>
-    </div>
-  `).join('') + `
-    <div class="pm-detail-row">
-      <span>Material</span>
-      <span class="pm-detail-val">${p.material}</span>
-    </div>
-  `;
-
-  // Add button state
-  updateModalAddBtn(p);
-
-  // Open
-  document.getElementById('productModalOverlay').classList.add('open');
-  document.getElementById('productModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
+REGIMES = {
+    'bull':     ( 0.18,  0.12),
+    'strong':   ( 0.28,  0.10),
+    'range':    ( 0.02,  0.14),
+    'crash':    (-1.20,  0.50),
+    'recovery': ( 0.60,  0.25),
+    'bear':     (-0.25,  0.22),
 }
 
-function switchModalImg(thumb, src) {
-  document.getElementById('pm-main-img').src = src;
-  document.querySelectorAll('.pm-thumb').forEach(t => t.classList.remove('active'));
-  thumb.classList.add('active');
+day_to_regime = ['bull'] * N
+def mark(s, e, r):
+    si = dates.searchsorted(pd.Timestamp(s))
+    ei = dates.searchsorted(pd.Timestamp(e))
+    for i in range(si, min(ei, N)):
+        day_to_regime[i] = r
+
+mark('2014-01-01','2015-08-01','bull')
+mark('2015-08-01','2015-11-01','range')
+mark('2015-11-01','2018-09-01','bull')
+mark('2018-09-01','2018-12-24','bear')
+mark('2018-12-24','2019-12-31','strong')
+mark('2020-02-20','2020-03-23','crash')
+mark('2020-03-23','2020-12-31','recovery')
+mark('2021-01-01','2022-01-01','strong')
+mark('2022-01-01','2022-10-15','bear')
+mark('2022-10-15','2023-07-01','recovery')
+mark('2023-07-01','2024-12-31','strong')
+
+rng_g = np.random.default_rng(42)
+price = 180.0
+closes = [price]
+vol_carry = 0.12
+
+for i in range(1, N):
+    r = day_to_regime[i]
+    mu_a, sig_a = REGIMES[r]
+    dt = 1/252
+    vol_carry = 0.85*vol_carry + 0.15*sig_a
+    sig = max(vol_carry, sig_a*0.7)
+    ret = mu_a*dt + sig*np.sqrt(dt)*rng_g.standard_normal()
+    price = max(price*(1+ret), 1.0)
+    closes.append(price)
+
+closes = np.array(closes)
+opens  = np.roll(closes, 1); opens[0] = closes[0]
+rangs  = (np.abs(closes-opens) * (1.5 + 0.5*rng_g.standard_normal(N).clip(-1.5,1.5))).clip(min=0.05)
+highs  = np.maximum(opens, closes) + rangs*rng_g.uniform(0.1, 0.5, N)
+lows   = np.minimum(opens, closes) - rangs*rng_g.uniform(0.1, 0.5, N)
+dv     = np.abs(closes-opens)/closes
+vols   = (80_000_000*(1+3*dv+0.5*rng_g.standard_normal(N))).clip(min=5_000_000)
+
+df = pd.DataFrame({'Open':np.round(opens,2),'High':np.round(highs,2),
+                   'Low':np.round(lows,2),'Close':np.round(closes,2),
+                   'Volume':vols.astype(int)}, index=dates)
+df.dropna(inplace=True)
+bh_ret_total = (df['Close'].iloc[-1]/df['Close'].iloc[0]-1)*100
+print(f"  {len(df)} days | ${df['Close'].iloc[0]:.0f} → ${df['Close'].iloc[-1]:.0f} | B&H: {bh_ret_total:.1f}%")
+
+# ── FEATURE ENGINEERING ───────────────────────────────────────────────────────
+hl  = df['High']-df['Low']
+hpc = (df['High']-df['Close'].shift(1)).abs()
+lpc = (df['Low'] -df['Close'].shift(1)).abs()
+df['ATR']  = pd.concat([hl,hpc,lpc],axis=1).max(axis=1).ewm(span=14,adjust=False).mean()
+df['Body']   = (df['Close']-df['Open']).abs()
+df['Range']  = df['High']-df['Low']
+df['UpWick'] = df['High']-df[['Open','Close']].max(axis=1)
+df['DnWick'] = df[['Open','Close']].min(axis=1)-df['Low']
+df['Bull']   = (df['Close']>df['Open']).astype(int)
+df['P_H']    = df['High'].shift(1)
+df['P_L']    = df['Low'].shift(1)
+df['P_C']    = df['Close'].shift(1)
+df['P_O']    = df['Open'].shift(1)
+df['P_Bull'] = df['Bull'].shift(1)
+for n in [5,10,20,50]:
+    df[f'RH{n}'] = df['High'].shift(1).rolling(n).max()
+    df[f'RL{n}'] = df['Low'].shift(1).rolling(n).min()
+df['WkH']    = df['High'].shift(1).rolling(5).max()
+df['WkL']    = df['Low'].shift(1).rolling(5).min()
+df['VolMA']  = df['Volume'].rolling(20).mean()
+df['VolR']   = df['Volume']/df['VolMA']
+df['Trend']  = np.sign(df['Close'].shift(1).rolling(20).mean().diff(5).fillna(0))
+df['IsRange']= df['ATR'].shift(1).rolling(15).mean() < df['Close'].shift(1)*0.012
+df.dropna(inplace=True)
+print(f"  Features done: {len(df)} rows\n")
+
+# ── SIGNAL GENERATORS ─────────────────────────────────────────────────────────
+def sr_signal(df):
+    near_sup = (df['Low'] -df['RL10']).abs()/df['Close']<0.006
+    near_res = (df['High']-df['RH10']).abs()/df['Close']<0.006
+    rev_bull = (df['Bull']==1)&(df['DnWick']>df['Body'])
+    rev_bear = (df['Bull']==0)&(df['UpWick']>df['Body'])
+    s=pd.Series(0,index=df.index)
+    s[near_sup&rev_bull]=1; s[near_res&rev_bear]=-1
+    return s
+
+def pa_signal(df):
+    bm   = df['Body'].clip(lower=0.001)
+    bpin = (df['DnWick']>=2*bm)&(df['UpWick']<bm*0.5)&(df['Bull']==1)
+    rpin = (df['UpWick']>=2*bm)&(df['DnWick']<bm*0.5)&(df['Bull']==0)
+    beng = (df['Open']<=df['P_C'])&(df['Close']>=df['P_O'])&(df['Bull']==1)&(df['P_Bull']==0)
+    reng = (df['Open']>=df['P_C'])&(df['Close']<=df['P_O'])&(df['Bull']==0)&(df['P_Bull']==1)
+    at_s = (df['Low'] -df['RL10']).abs()/df['Close']<0.009
+    at_r = (df['High']-df['RH10']).abs()/df['Close']<0.009
+    s=pd.Series(0,index=df.index)
+    s[((bpin|beng)&at_s)]=1; s[((rpin|reng)&at_r)]=-1
+    return s
+
+def wyckoff_signal(df):
+    spring   =(df['Low']<df['RL20'])&(df['Close']>df['RL20'])&(df['Bull']==1)
+    upthrust =(df['High']>df['RH20'])&(df['Close']<df['RH20'])&(df['Bull']==0)
+    s=pd.Series(0,index=df.index)
+    s[df['IsRange']&spring]=1; s[df['IsRange']&upthrust]=-1
+    return s
+
+def orderflow_signal(df):
+    at_h=df['High']>=df['RH20']; at_l=df['Low']<=df['RL20']
+    lv=df['VolR']<0.80; hv=df['VolR']>1.60
+    s=pd.Series(0,index=df.index)
+    s[(at_l&lv&(df['Bull']==1))|(at_l&hv&(df['Bull']==1))]=1
+    s[(at_h&lv&(df['Bull']==0))|(at_h&hv&(df['Bull']==0))]=-1
+    return s
+
+def ict_signal(df):
+    bsw=(df['Low']<df['P_L'])&(df['Close']>df['P_L'])&(df['Trend']>=0)
+    rsw=(df['High']>df['P_H'])&(df['Close']<df['P_H'])&(df['Trend']<=0)
+    bob=(df['P_Bull']==0); rob=(df['P_Bull']==1)
+    s=pd.Series(0,index=df.index)
+    s[bsw&bob]=1; s[rsw&rob]=-1
+    return s
+
+def po3_signal(df):
+    gd=df['Open']<df['P_C']*0.9990; gu=df['Open']>df['P_C']*1.0010
+    db=(df['Close']-df['Open'])>df['ATR']*0.40
+    ds=(df['Open']-df['Close'])>df['ATR']*0.40
+    vo=df['VolR']>0.85
+    s=pd.Series(0,index=df.index)
+    s[gd&db&vo]=1; s[gu&ds&vo]=-1
+    return s
+
+def tjr_signal(df):
+    ns=(df['Low'] -df['WkL']).abs()/df['Close']<0.006
+    nr=(df['High']-df['WkH']).abs()/df['Close']<0.006
+    sb=(df['Bull']==1)&(df['Body']>df['ATR']*0.45)&(df['VolR']>1.15)
+    ss=(df['Bull']==0)&(df['Body']>df['ATR']*0.45)&(df['VolR']>1.15)
+    s=pd.Series(0,index=df.index)
+    s[ns&sb&(df['Trend']>0)]=1; s[nr&ss&(df['Trend']<0)]=-1
+    return s
+
+def combined_signal(df):
+    si=ict_signal(df); sp=pa_signal(df); ss=sr_signal(df)
+    sw=wyckoff_signal(df); so=orderflow_signal(df); spo=po3_signal(df)
+    bull=(si==1).astype(int)+(sp==1).astype(int)+(ss==1).astype(int)+(sw==1).astype(int)+(so==1).astype(int)+(spo==1).astype(int)
+    bear=(si==-1).astype(int)+(sp==-1).astype(int)+(ss==-1).astype(int)+(sw==-1).astype(int)+(so==-1).astype(int)+(spo==-1).astype(int)
+    s=pd.Series(0,index=df.index)
+    s[(si==1) &(bull>=3)]=1
+    s[(si==-1)&(bear>=3)]=-1
+    return s
+
+# ── BACKTEST ENGINE ────────────────────────────────────────────────────────────
+def run_backtest(sig_fn, df, initial=INITIAL_CAPITAL):
+    sigs=sig_fn(df)
+    cap=float(initial)
+    eq_vals=[]; trades=[]
+    for i in range(len(df)):
+        row=df.iloc[i]; sig=int(sigs.iloc[i])
+        eq_vals.append(cap)
+        if sig==0 or pd.isna(row['ATR']) or row['ATR']<=0:
+            continue
+        entry=float(row['Open']); atr_v=float(row['ATR']); stop_d=atr_v*ATR_STOP_MULT
+        risk_amt=cap*RISK_PCT
+        if sig==1:
+            stop=entry-stop_d; target=entry+stop_d*RR
+            hit_s=row['Low']<=stop; hit_t=row['High']>=target
+        else:
+            stop=entry+stop_d; target=entry-stop_d*RR
+            hit_s=row['High']>=stop; hit_t=row['Low']<=target
+        if hit_t and hit_s:
+            mid=(stop+target)/2
+            won=(row['Close']>mid) if sig==1 else (row['Close']<mid)
+            pnl=risk_amt*RR if won else -risk_amt
+        elif hit_t: pnl=risk_amt*RR
+        elif hit_s: pnl=-risk_amt
+        else:
+            move=(row['Close']-entry) if sig==1 else (entry-row['Close'])
+            pnl=(move/stop_d)*risk_amt
+        cap=max(cap+pnl,1.0); eq_vals[-1]=cap
+        trades.append({'pnl':pnl,'win':pnl>0,'date':df.index[i]})
+    eq=pd.Series(eq_vals,index=df.index)
+    tdf=pd.DataFrame(trades) if trades else pd.DataFrame(columns=['pnl','win','date'])
+    return eq, tdf
+
+def calc_metrics(eq, tdf, name):
+    ret=(eq.iloc[-1]/eq.iloc[0]-1)*100; n=len(tdf)
+    wr=float(tdf['win'].mean()*100) if n>0 else 0
+    dd=float(((eq-eq.cummax())/eq.cummax()*100).min())
+    rets=eq.pct_change().dropna()
+    sharpe=float(rets.mean()/rets.std()*np.sqrt(252)) if rets.std()>0 else 0
+    return dict(name=name,ret=ret,wr=wr,trades=n,dd=dd,sharpe=sharpe,final=float(eq.iloc[-1]))
+
+# ── RUN ALL ────────────────────────────────────────────────────────────────────
+strats = {
+    'S&R':          sr_signal,
+    'Price Action': pa_signal,
+    'Wyckoff':      wyckoff_signal,
+    'Order Flow':   orderflow_signal,
+    'ICT / SMC':    ict_signal,
+    'PO3 / AMD':    po3_signal,
+    'TJR':          tjr_signal,
+    'Combined':     combined_signal,
 }
 
-function selectModalColor(el, name) {
-  document.querySelectorAll('.pm-color').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  selectedColor = name;
-  document.getElementById('pm-color-label').textContent = name;
-  const p = products.find(x => x.id === activeProductId);
-  updateModalAddBtn(p);
-}
+print("Running backtests...")
+equities,metrics_list,trades_all={},{},{}
+for name,fn in strats.items():
+    eq,tdf=run_backtest(fn,df)
+    m=calc_metrics(eq,tdf,name)
+    equities[name]=eq; metrics_list[name]=m; trades_all[name]=tdf
+    print(f"  {name:<14}  {m['trades']:>5} trades | WR {m['wr']:5.1f}% | Return {m['ret']:+8.1f}% | Sharpe {m['sharpe']:+.3f}")
 
-function selectModalSize(el, size) {
-  if (el.classList.contains('soldout')) return;
-  document.querySelectorAll('.pm-size').forEach(s => s.classList.remove('active'));
-  el.classList.add('active');
-  selectedSize = size;
-  document.getElementById('pm-size-label').textContent = size;
-  const p = products.find(x => x.id === activeProductId);
-  updateModalAddBtn(p);
-}
+bh_eq  = INITIAL_CAPITAL*df['Close']/df['Close'].iloc[0]
+bh_ret = bh_ret_total
+print(f"  {'Buy & Hold':<14}    N/A trades | WR   N/A | Return {bh_ret:+8.1f}%")
 
-function updateModalAddBtn(p) {
-  const btn = document.getElementById('pm-add-btn');
-  if (p.tag === 'Sold Out') {
-    btn.textContent = 'Sold Out';
-    btn.className = 'pm-add-btn no-size';
-    btn.disabled = true;
-    return;
-  }
-  btn.disabled = false;
-  if (!selectedSize) {
-    btn.textContent = 'Select a Size';
-    btn.className = 'pm-add-btn no-size';
-  } else {
-    btn.innerHTML = `+ Add to Bag — $${p.price}`;
-    btn.className = 'pm-add-btn';
-  }
-}
+# ── CHART ─────────────────────────────────────────────────────────────────────
+print("\nRendering chart...")
+fig=plt.figure(figsize=(20,24),facecolor='#0C0C0C')
+gs=gridspec.GridSpec(4,2,figure=fig,hspace=0.44,wspace=0.28,
+                     top=0.945,bottom=0.03,left=0.065,right=0.975)
+ax_eq=fig.add_subplot(gs[0,:]); ax_dd=fig.add_subplot(gs[1,:])
+ax_ret=fig.add_subplot(gs[2,0]); ax_sh=fig.add_subplot(gs[2,1])
+ax_wr=fig.add_subplot(gs[3,0]);  ax_tr=fig.add_subplot(gs[3,1])
 
-function addFromModal() {
-  if (!selectedSize || !activeProductId) return;
-  const p = products.find(x => x.id === activeProductId);
-  if (!p || p.tag === 'Sold Out') return;
-  const existing = cart.find(i => i.id === p.id && i.selectedSize === selectedSize);
-  if (existing) { existing.qty++; }
-  else { cart.push({...p, qty: 1, selectedSize, selectedColor}); }
-  updateCartUI();
-  showToast(`✓ ${p.name} (${selectedSize}) added to bag`);
-  closeProductModal();
-}
+def style(ax,title):
+    ax.set_facecolor('#111111'); ax.tick_params(colors='#777',labelsize=9)
+    for sp in ax.spines.values(): sp.set_edgecolor('#252525')
+    ax.grid(axis='y',color='#1C1C1C',lw=0.6,ls='--')
+    ax.grid(axis='x',color='#181818',lw=0.3)
+    ax.set_title(title,color='#C8C8C8',fontsize=10.5,pad=9,loc='left',fontfamily='monospace')
 
-function closeProductModal() {
-  document.getElementById('productModalOverlay').classList.remove('open');
-  document.getElementById('productModal').classList.remove('open');
-  document.body.style.overflow = '';
-  activeProductId = null;
-  selectedColor = null;
-  selectedSize = null;
-}
+# Panel 1: Equity
+style(ax_eq,'  Portfolio value  —  $100K starting  |  1% risk/trade  |  Synthetic SPY 2014–2024')
+ax_eq.plot(bh_eq.index,bh_eq/1000,color='#454545',lw=2,ls='--',label='Buy & Hold SPY',alpha=0.85,zorder=1)
+for name,eq in equities.items():
+    lw=2.8 if name=='Combined' else 1.2
+    zo=10  if name=='Combined' else 2
+    ax_eq.plot(eq.index,eq/1000,color=COLORS[name],lw=lw,label=name,alpha=0.9,zorder=zo)
+ax_eq.set_ylabel('Value ($K)',color='#777',fontsize=9)
+ax_eq.yaxis.set_major_formatter(plt.FuncFormatter(lambda x,_: f'${x:.0f}K'))
+ax_eq.legend(ncol=3,fontsize=8.5,loc='upper left',framealpha=0.07,labelcolor='#CCCCCC',facecolor='#111',edgecolor='#333')
 
-function addToCart(id, e) {
-  if (e) e.stopPropagation();
-  const product = products.find(p => p.id === id);
-  if (!product || product.tag === 'Sold Out') return;
-  const existing = cart.find(i => i.id === id);
-  if (existing) { existing.qty++; } else { cart.push({...product, qty: 1}); }
-  updateCartUI();
-  showToast(`✓ ${product.name} added to bag`);
-}
+# Panel 2: Drawdown
+style(ax_dd,'  Drawdown from equity peak  (%)')
+for name,eq in equities.items():
+    dds=(eq-eq.cummax())/eq.cummax()*100
+    ax_dd.fill_between(dds.index,dds,0,alpha=0.12,color=COLORS[name])
+    ax_dd.plot(dds.index,dds,color=COLORS[name],lw=0.9,label=name)
+ax_dd.set_ylabel('Drawdown %',color='#777',fontsize=9)
+ax_dd.legend(ncol=4,fontsize=8,loc='lower left',framealpha=0.07,labelcolor='#CCCCCC',facecolor='#111',edgecolor='#333')
 
-function removeFromCart(id) {
-  cart = cart.filter(i => i.id !== id);
-  updateCartUI();
-}
+def bar_chart(ax,title,key,fmt='{:.1f}',unit='',hline=None,hlabel=''):
+    style(ax,title)
+    names=[m['name'] for m in metrics_list.values()]
+    vals =[m[key]    for m in metrics_list.values()]
+    bclrs=[COLORS[n] for n in names]
+    bars=ax.bar(range(len(names)),vals,color=bclrs,alpha=0.85,width=0.62,zorder=3)
+    ax.set_xticks(range(len(names)))
+    ax.set_xticklabels([n.replace(' /','\n/') if '/' in n else n.replace(' ','\n') for n in names],
+                       fontsize=7.8,color='#AAAAAA')
+    vr=max(vals)-min(vals) if max(vals)!=min(vals) else 1
+    for b,v in zip(bars,vals):
+        yp=b.get_height()+vr*0.025 if v>=0 else b.get_height()-vr*0.07
+        ax.text(b.get_x()+b.get_width()/2,yp,fmt.format(v)+unit,
+                ha='center',va='bottom',fontsize=7.5,color='#DDD')
+    if hline is not None:
+        ax.axhline(hline,color='#555',ls='--',lw=1.4,alpha=0.8)
+        ax.text(len(names)-0.6,hline,f'  {hlabel}',va='bottom',fontsize=7,color='#666')
+    ax.tick_params(axis='y',colors='#777')
 
-function updateCartUI() {
-  const count = cart.reduce((a,b) => a + b.qty, 0);
-  document.getElementById('cartCount').textContent = count;
-  const body = document.getElementById('cartBody');
-  const footer = document.getElementById('cartFooter');
-  if (cart.length === 0) {
-    body.innerHTML = '<p class="cart-empty">Your bag is empty.</p>';
-    footer.style.display = 'none';
-    return;
-  }
-  footer.style.display = 'block';
-  body.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <div class="cart-item-img" style="overflow:hidden;padding:0">
-        <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;display:block;">
-      </div>
-      <div class="cart-item-info">
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-size">${item.selectedSize ? 'Size: ' + item.selectedSize : ''} ${item.selectedColor ? '· ' + item.selectedColor : ''}</div>
-        <div class="cart-item-size">Qty: ${item.qty}</div>
-        <div class="cart-item-price">$${item.price * item.qty}</div>
-      </div>
-      <button class="remove-item" onclick="removeFromCart(${item.id})">✕</button>
-    </div>
-  `).join('');
-  const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
-  document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
-}
+bar_chart(ax_ret,'  Total return (%)',    'ret',  hline=bh_ret, hlabel=f'B&H {bh_ret:.0f}%')
+bar_chart(ax_sh, '  Sharpe ratio',        'sharpe',fmt='{:.3f}')
+bar_chart(ax_wr, '  Win rate (%)',         'wr',   unit='%')
+bar_chart(ax_tr, '  Number of trades',    'trades',fmt='{:.0f}')
 
-function toggleCart() {
-  document.getElementById('cartSidebar').classList.toggle('open');
-  document.getElementById('cartOverlay').classList.toggle('open');
-}
+fig.suptitle('Trading Strategy Backtest  |  Synthetic SPY 2014–2024  |  NY Open  |  1% Risk  |  2:1 R:R',
+             color='#DDDDDD',fontsize=12,y=0.968,fontfamily='monospace')
 
-function toggleMenu() {
-  document.getElementById('mobileMenu').classList.toggle('open');
-}
+out='/mnt/user-data/outputs/strategy_comparison.png'
+plt.savefig(out,dpi=150,bbox_inches='tight',facecolor='#0C0C0C')
+print(f"  Saved → {out}")
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    currentFilter = this.dataset.filter;
-    renderProducts(currentFilter);
-  });
-});
+# ── SUMMARY TABLE ─────────────────────────────────────────────────────────────
+print()
+print("━"*88)
+print(f"{'Strategy':<14} │ {'Return':>8} │ {'Win Rate':>8} │ {'Trades':>7} │ {'Max DD':>8} │ {'Sharpe':>7} │ {'Final $':>12}")
+print("━"*88)
+for m in sorted(metrics_list.values(),key=lambda x:x['ret'],reverse=True):
+    star=" ★" if m['name']=='Combined' else ""
+    print(f"{m['name']:<14} │ {m['ret']:>7.1f}% │ {m['wr']:>7.1f}% │ {m['trades']:>7} │ "
+          f"{m['dd']:>7.1f}% │ {m['sharpe']:>7.3f} │ ${m['final']:>11,.0f}{star}")
+print(f"{'Buy & Hold':<14} │ {bh_ret:>7.1f}% │ {'—':>8} │ {'—':>7} │ {'—':>8} │ {'—':>7} │ ${INITIAL_CAPITAL*(1+bh_ret/100):>11,.0f}")
+print("━"*88)
+print("\nDone.")
+PYEOF
+python /home/claude/backtest.py 2>&1
+Salida
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+Generating realistic SPY-like data 2014–2024...
+  2870 days | $180 → $873 | B&H: 384.8%
+  Features done: 2820 rows
 
-function handleSubscribe(e) {
-  e.preventDefault();
-  const email = document.getElementById('emailInput').value;
-  showToast(`🔥 You're in! Drop alerts coming to ${email}`);
-  document.getElementById('emailInput').value = '';
-}
+Running backtests...
+  S&R                12 trades | WR  66.7% | Return     +1.9% | Sharpe +0.346
+  Price Action      293 trades | WR  99.7% | Return   +899.4% | Sharpe +4.701
+  Wyckoff            82 trades | WR  97.6% | Return    +99.3% | Sharpe +2.349
+  Order Flow         52 trades | WR  98.1% | Return    +56.4% | Sharpe +1.881
+  ICT / SMC         371 trades | WR  84.9% | Return   +695.7% | Sharpe +4.176
+  PO3 / AMD           0 trades | WR   0.0% | Return     +0.0% | Sharpe +0.000
+  TJR                70 trades | WR  98.6% | Return    +82.9% | Sharpe +2.343
+  Combined            6 trades | WR 100.0% | Return     +5.5% | Sharpe +0.725
+  Buy & Hold        N/A trades | WR   N/A | Return   +384.8%
 
-// Scroll animations
-function observeReveal() {
-  const els = document.querySelectorAll('.reveal:not(.visible)');
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach((en, i) => {
-      if (en.isIntersecting) {
-        setTimeout(() => en.target.classList.add('visible'), i * 80);
-        obs.unobserve(en.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  els.forEach(el => obs.observe(el));
-}
+Rendering chart...
+  Saved → /mnt/user-data/outputs/strategy_comparison.png
 
-// Navbar scroll
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-});
-
-// Custom cursor
-const cursor = document.getElementById('cursor');
-document.addEventListener('mousemove', e => {
-  cursor.style.left = e.clientX + 'px';
-  cursor.style.top = e.clientY + 'px';
-});
-document.querySelectorAll('a, button, .product-card, .filter-btn, .social-link, .pm-thumb, .pm-color, .pm-size').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-});
-
-// Re-apply cursor hover to dynamically created modal elements
-document.getElementById('productModal').addEventListener('mouseover', e => {
-  if (e.target.matches('button, .pm-thumb, .pm-color, .pm-size')) cursor.classList.add('hover');
-});
-document.getElementById('productModal').addEventListener('mouseout', e => {
-  if (e.target.matches('button, .pm-thumb, .pm-color, .pm-size')) cursor.classList.remove('hover');
-});
-
-
-// Checkout
-function openCheckout() {
-  if (cart.length === 0) { showToast('Your bag is empty!'); return; }
-  document.getElementById('cartSidebar').classList.remove('open');
-  document.getElementById('cartOverlay').classList.remove('open');
-  setTimeout(() => {
-    document.getElementById('checkoutOverlay').classList.add('open');
-    document.getElementById('checkoutModal').classList.add('open');
-    renderCheckoutSummary();
-  }, 300);
-}
-
-function closeCheckout() {
-  document.getElementById('checkoutOverlay').classList.remove('open');
-  document.getElementById('checkoutModal').classList.remove('open');
-}
-
-function renderCheckoutSummary() {
-  const total = cart.reduce((a, b) => a + b.price * b.qty, 0);
-  document.getElementById('co-total-btn').textContent = '$' + total.toFixed(2);
-  document.getElementById('co-subtotal').textContent = '$' + total.toFixed(2);
-  document.getElementById('co-grand-total').textContent = '$' + total.toFixed(2);
-  document.getElementById('co-items-list').innerHTML = cart.map(item => `
-    <div class="co-summary-item">
-      <div class="co-summary-item-img" style="overflow:hidden;padding:0">
-        <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;display:block;">
-      </div>
-      <div style="flex:1">
-        <div class="co-summary-item-name">${item.name}</div>
-        <div class="co-summary-item-qty">${item.selectedSize ? 'Size: ' + item.selectedSize : ''} ${item.selectedColor ? '· ' + item.selectedColor : ''}</div>
-        <div class="co-summary-item-qty">Qty: ${item.qty}</div>
-        <div class="co-summary-item-price">$${(item.price * item.qty).toFixed(2)}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function handleExpressPay(method) {
-  closeCheckout();
-  setTimeout(() => {
-    document.getElementById('successOverlay').classList.add('open');
-    cart = [];
-    updateCartUI();
-  }, 400);
-  showToast(method + ' payment confirmed!');
-}
-
-function handlePay() {
-  const email = document.getElementById('co-email').value;
-  const card = document.getElementById('co-card').value;
-  const fname = document.getElementById('co-fname').value;
-  if (!email || !card || !fname) { showToast('Please fill in all required fields'); return; }
-  closeCheckout();
-  setTimeout(() => {
-    document.getElementById('successOverlay').classList.add('open');
-    cart = [];
-    updateCartUI();
-  }, 400);
-}
-
-function closeSuccess() {
-  document.getElementById('successOverlay').classList.remove('open');
-}
-
-function formatCard(input) {
-  let val = input.value.replace(/\D/g, '').substring(0, 16);
-  input.value = val.replace(/(\d{4})/g, '$1 ').trim();
-}
-
-function formatExpiry(input) {
-  let val = input.value.replace(/\D/g, '').substring(0, 4);
-  if (val.length >= 3) val = val.substring(0,2) + ' / ' + val.substring(2);
-  input.value = val;
-}
-
-// Escape key closes modals
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeProductModal();
-    closeCheckout();
-  }
-});
-
-// Init
-renderProducts('all');
-observeReveal();
-</script>
-</body>
-</html>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Strategy       │   Return │ Win Rate │  Trades │   Max DD │  Sharpe │      Final $
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Price Action   │   899.4% │    99.7% │     293 │    -1.0% │   4.701 │ $    999,414
+ICT / SMC      │   695.7% │    84.9% │     371 │    -1.5% │   4.176 │ $    795,722
+Wyckoff        │    99.3% │    97.6% │      82 │    -1.0% │   2.349 │ $    199,328
+TJR            │    82.9% │    98.6% │      70 │    -1.0% │   2.343 │ $    182,934
+Order Flow     │    56.4% │    98.1% │      52 │    -1.0% │   1.881 │ $    156,381
+Combined       │     5.5% │   100.0% │       6 │     0.0% │   0.725 │ $    105,528 ★
+S&R            │     1.9% │    66.7% │      12 │    -1.0% │   0.346 │ $    101,911
+PO3 / AMD      │     0.0% │     0.0% │       0 │     0.0% │   0.000 │ $    100,000
+Buy & Hold     │   384.8% │        — │       — │        — │       — │ $    484,817
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
